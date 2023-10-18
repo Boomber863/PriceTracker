@@ -4,11 +4,10 @@ public class UserResponse {
 
     private String username;
     private String email;
-    private String password;
-
-    public UserResponse() {
-
-    }
+    private int id;
+    private boolean is_active;
+    private String role;
+    private boolean is_subscribed;
 
     public String getUsername() {
         return username;
@@ -18,7 +17,19 @@ public class UserResponse {
         return email;
     }
 
-    public String getPassword() {
-        return password;
+    public int getId() {
+        return id;
+    }
+
+    public boolean isActive() {
+        return is_active;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public boolean isSubscribed() {
+        return is_subscribed;
     }
 }
