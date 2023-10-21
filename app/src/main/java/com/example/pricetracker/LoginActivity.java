@@ -7,6 +7,8 @@ import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.pricetracker.api.headers.AuthTokenException;
+import com.example.pricetracker.api.headers.AuthorizationUtils;
 import com.example.pricetracker.api.provider.AuthenticationServiceProvider;
 import com.example.pricetracker.dto.request.LoginRequest;
 import com.example.pricetracker.dto.response.AuthTokenResponse;
@@ -44,8 +46,13 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<AuthTokenResponse> call, Response<AuthTokenResponse> response) {
                 if (response.isSuccessful()) {
-                    AuthTokenResponse authTokenResponse = response.body();
-                    Log.i("SUCCESS", "");
+                    final AuthTokenResponse authTokenResponse = response.body();
+                    try {
+                        AuthorizationUtils.setAuthorizationData(authTokenResponse);
+                        Log.i("LOGIN SUCCESS", "User successfully logged in");
+                    } catch (AuthTokenException e) {
+                        Log.e("AUTHORIZATION FAILED", e.getMessage());
+                    }
                 }
             }
 
