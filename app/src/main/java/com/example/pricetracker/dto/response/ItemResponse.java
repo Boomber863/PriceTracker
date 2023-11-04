@@ -19,4 +19,9 @@ public class ItemResponse {
     public List<CommentResponse> getComments() {
         return comments;
     }
+
+    @Override
+    public String toString() {
+        return this.name;
+    }
 }

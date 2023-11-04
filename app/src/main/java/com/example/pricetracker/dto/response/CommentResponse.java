@@ -1,16 +1,14 @@
 package com.example.pricetracker.dto.response;
 
-import java.time.LocalDate;
-
 public class CommentResponse {
 
-    private LocalDate created_date;
+    private String created_date;
     private String text;
     private int id;
     private int item_id;
     private int user_id;
 
-    public LocalDate getCreatedDate() {
+    public String getCreatedDate() {
         return created_date;
     }
 

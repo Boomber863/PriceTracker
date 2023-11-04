@@ -1,14 +1,14 @@
 package com.example.pricetracker.api.provider;
 
-import android.util.Log;
-
 import com.example.pricetracker.api.ItemService;
 import com.example.pricetracker.api.ServerUrls;
 import com.example.pricetracker.api.headers.AuthTokenException;
 import com.example.pricetracker.api.headers.AuthorizationUtils;
+import com.example.pricetracker.dto.response.ItemResponse;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
+import java.util.List;
+
+import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -16,14 +16,19 @@ public class ItemServiceProvider {
 
     private static ItemServiceProvider instance = null;
     private final ItemService itemService;
+    private final String authToken;
 
     private ItemServiceProvider() {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(ServerUrls.SERVER_URL)
                 .addConverterFactory(GsonConverterFactory.create())
-                .client(createHttpClient())
                 .build();
         this.itemService = retrofit.create(ItemService.class);
+        try {
+            this.authToken = AuthorizationUtils.getAuthTokenFormatted();
+        } catch (AuthTokenException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static ItemServiceProvider getInstance() {
@@ -33,22 +38,9 @@ public class ItemServiceProvider {
         return instance;
     }
 
-    public ItemService getItemService() {
-        return itemService;
+    public Call<List<ItemResponse>> getItems() {
+        return itemService.getItems(authToken);
     }
 
-    private static OkHttpClient createHttpClient() {
-        OkHttpClient client = new OkHttpClient();
-        client.networkInterceptors().add(chain -> {
-            Request.Builder requestBuilder = chain.request().newBuilder();
-            try {
-                requestBuilder.header("Authorization", AuthorizationUtils.getAuthTokenFormatted());
-            } catch (AuthTokenException e) {
-                Log.e("AUTHORIZATION ERROR", e.getMessage());
-            }
-            requestBuilder.header("Content-Type", "application/json");
-            return chain.proceed(requestBuilder.build());
-        });
-        return client;
-    }
+    // TODO: IMPLEMENT OTHER ITEM METHODS AS ABOVE
 }

@@ -1,5 +1,6 @@
 package com.example.pricetracker;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -9,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.pricetracker.api.headers.AuthTokenException;
 import com.example.pricetracker.api.headers.AuthorizationUtils;
-import com.example.pricetracker.api.provider.AuthenticationServiceProvider;
+import com.example.pricetracker.api.provider.AuthorizationServiceProvider;
 import com.example.pricetracker.dto.request.LoginRequest;
 import com.example.pricetracker.dto.response.AuthTokenResponse;
 
@@ -38,21 +39,23 @@ public class LoginActivity extends AppCompatActivity {
 
         String username = usernameEditText.getText().toString();
         String password = passwordEditText.getText().toString();
-        Call<AuthTokenResponse> call = AuthenticationServiceProvider
+        Call<AuthTokenResponse> call = AuthorizationServiceProvider
                 .getInstance()
-                .getAuthenticationService()
                 .loginUser(new LoginRequest(username, password));
         call.enqueue(new Callback<AuthTokenResponse>() {
             @Override
             public void onResponse(Call<AuthTokenResponse> call, Response<AuthTokenResponse> response) {
-                if (response.isSuccessful()) {
-                    final AuthTokenResponse authTokenResponse = response.body();
-                    try {
-                        AuthorizationUtils.setAuthorizationData(authTokenResponse);
-                        Log.i("LOGIN SUCCESS", "User successfully logged in");
-                    } catch (AuthTokenException e) {
-                        Log.e("AUTHORIZATION FAILED", e.getMessage());
-                    }
+                if (!response.isSuccessful() || response.body() == null) {
+                    Log.e("ERROR", "Bad response for login");
+                    return;
+                }
+                final AuthTokenResponse authTokenResponse = response.body();
+                try {
+                    AuthorizationUtils.setAuthorizationData(authTokenResponse);
+                    Log.i("LOGIN SUCCESS", "User successfully logged in");
+                    startActivity(new Intent(LoginActivity.this, HomepageActivity.class));
+                } catch (AuthTokenException e) {
+                    Log.e("AUTHORIZATION FAILED", e.getMessage());
                 }
             }
 
