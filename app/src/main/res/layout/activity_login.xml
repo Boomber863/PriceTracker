@@ -11,7 +11,7 @@
         android:id="@+id/loginUsername"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Username"
+        android:hint="@string/username"
         android:layout_marginTop="58dp"
         android:inputType="text" />
 
@@ -21,7 +21,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/loginUsername"
         android:layout_marginTop="58dp"
-        android:hint="Password"
+        android:hint="@string/password"
         android:inputType="textPassword" />
 
     <Button
@@ -30,6 +30,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/loginPassword"
         android:layout_marginTop="58dp"
-        android:text="Zaloguj" />
+        android:text="@string/login" />
 
 </RelativeLayout>
