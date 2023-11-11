@@ -11,8 +11,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.pricetracker.api.headers.AuthTokenException;
 import com.example.pricetracker.api.headers.AuthorizationUtils;
 import com.example.pricetracker.api.provider.AuthorizationServiceProvider;
+import com.example.pricetracker.components.CustomToast;
 import com.example.pricetracker.dto.request.RegistrationRequest;
 import com.example.pricetracker.dto.response.AuthTokenResponse;
+import com.example.pricetracker.dto.response.SignupResponse;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -41,19 +43,20 @@ public class SignupActivity extends AppCompatActivity {
         String username = usernameEditText.getText().toString();
         String email = emailEditText.getText().toString();
         String password = passwordEditText.getText().toString();
-        Call<AuthTokenResponse> call = AuthorizationServiceProvider
+        Call<SignupResponse> call = AuthorizationServiceProvider
                 .getInstance()
                 .registerUser(new RegistrationRequest(username, email, password));
-        call.enqueue(new Callback<AuthTokenResponse>() {
+        call.enqueue(new Callback<SignupResponse>() {
             @Override
-            public void onResponse(Call<AuthTokenResponse> call, Response<AuthTokenResponse> response) {
+            public void onResponse(Call<SignupResponse> call, Response<SignupResponse> response) {
                 if (!response.isSuccessful() || response.body() == null) {
-                    Log.e("ERROR", "Bad response for signup");
+                    CustomToast.showToastShort(SignupActivity.this, "Email already used");
+                    Log.e("ERROR", "Bad request for signup");
                     return;
                 }
-                final AuthTokenResponse authTokenResponse = response.body();
+                final SignupResponse signupResponse = response.body();
                 try {
-                    AuthorizationUtils.setAuthorizationData(authTokenResponse);
+                    AuthorizationUtils.setAuthorizationData(signupResponse.getToken());
                     Log.i("SIGNUP SUCCESS", "User successfully signed up");
                     startActivity(new Intent(SignupActivity.this, HomepageActivity.class));
                 } catch (AuthTokenException e) {
@@ -62,7 +65,8 @@ public class SignupActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<AuthTokenResponse> call, Throwable t) {
+            public void onFailure(Call<SignupResponse> call, Throwable t) {
+                CustomToast.showToastShort(SignupActivity.this, "Failed to sign up");
                 Log.e("ERROR", "Couldn't  sign up", t);
             }
         });

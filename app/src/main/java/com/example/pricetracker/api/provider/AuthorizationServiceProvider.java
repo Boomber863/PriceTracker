@@ -5,6 +5,7 @@ import com.example.pricetracker.api.ServerUrls;
 import com.example.pricetracker.dto.request.LoginRequest;
 import com.example.pricetracker.dto.request.RegistrationRequest;
 import com.example.pricetracker.dto.response.AuthTokenResponse;
+import com.example.pricetracker.dto.response.SignupResponse;
 
 import retrofit2.Call;
 import retrofit2.Retrofit;
@@ -34,7 +35,7 @@ public class AuthorizationServiceProvider {
         return authorizationService.loginUser(loginRequest);
     }
 
-    public Call<AuthTokenResponse> registerUser(RegistrationRequest registrationRequest) {
+    public Call<SignupResponse> registerUser(RegistrationRequest registrationRequest) {
         return authorizationService.registerUser(registrationRequest);
     }
 }

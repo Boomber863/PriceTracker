@@ -5,12 +5,14 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.pricetracker.api.headers.AuthTokenException;
 import com.example.pricetracker.api.headers.AuthorizationUtils;
 import com.example.pricetracker.api.provider.AuthorizationServiceProvider;
+import com.example.pricetracker.components.CustomToast;
 import com.example.pricetracker.dto.request.LoginRequest;
 import com.example.pricetracker.dto.response.AuthTokenResponse;
 
@@ -46,7 +48,8 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<AuthTokenResponse> call, Response<AuthTokenResponse> response) {
                 if (!response.isSuccessful() || response.body() == null) {
-                    Log.e("ERROR", "Bad response for login");
+                    CustomToast.showToastShort(LoginActivity.this, "Wrong credentials");
+                    Log.e("ERROR", "Bad request for login");
                     return;
                 }
                 final AuthTokenResponse authTokenResponse = response.body();
@@ -61,6 +64,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<AuthTokenResponse> call, Throwable t) {
+                CustomToast.showToastShort(LoginActivity.this, "Failed to log in");
                 Log.e("ERROR", "Couldn't log in", t);
             }
         });

@@ -4,8 +4,15 @@ public class AuthTokenResponse {
 
     private String access_token;
     private String token_type;
-    private boolean is_subscribed;
-    private String end_date;
+
+    public AuthTokenResponse() {
+
+    }
+
+    public AuthTokenResponse(String token) {
+        this.access_token = token;
+        this.token_type = "bearer";
+    }
 
     public String getAccessToken() {
         return access_token;
