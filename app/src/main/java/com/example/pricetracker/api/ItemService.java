@@ -12,6 +12,7 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.Query;
 
 public interface ItemService {
 
@@ -22,7 +23,8 @@ public interface ItemService {
     Call<List<ItemResponse>> getFollowedItems(@Header("Authorization") String token);
 
     @GET("/item_prices")
-    Call<List<ItemPriceResponse>> getItemPrices(@Header("Authorization") String token);
+    Call<List<ItemPriceResponse>> getItemPrices(@Header("Authorization") String token,
+                                                @Query("item_id") int itemId);
 
     @POST("/follow")
     Call<FollowedItemResponse> followItem(@Header("Authorization") String token,

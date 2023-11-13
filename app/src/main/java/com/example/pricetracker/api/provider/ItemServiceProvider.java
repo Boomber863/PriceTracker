@@ -50,8 +50,8 @@ public class ItemServiceProvider {
         return itemService.getFollowedItems(authToken);
     }
 
-    public Call<List<ItemPriceResponse>> getItemPrices() {
-        return itemService.getItemPrices(authToken);
+    public Call<List<ItemPriceResponse>> getItemPrices(int itemId) {
+        return itemService.getItemPrices(authToken, itemId);
     }
 
     public Call<FollowedItemResponse> followItem(FollowItemRequest followItemRequest) {

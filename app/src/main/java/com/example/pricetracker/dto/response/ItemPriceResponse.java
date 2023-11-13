@@ -6,19 +6,23 @@ public class ItemPriceResponse {
 
     private int id;
     private int item_id;
-    private LocalDate date;
+    private String date;
     private double price;
 
     public int getId() {
         return id;
     }
 
-    public int getItem_id() {
+    public int getItemId() {
         return item_id;
     }
 
-    public LocalDate getDate() {
+    public String getDateString() {
         return date;
+    }
+
+    public LocalDate getDate() {
+        return LocalDate.parse(date);
     }
 
     public double getPrice() {
