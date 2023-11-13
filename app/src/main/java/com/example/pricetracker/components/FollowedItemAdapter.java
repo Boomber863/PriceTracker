@@ -1,4 +1,4 @@
-package com.example.pricetracker;
+package com.example.pricetracker.components;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.example.pricetracker.R;
 import com.example.pricetracker.dto.response.ItemResponse;
 
 import java.util.List;
@@ -18,20 +19,23 @@ import java.util.Objects;
 
 public class FollowedItemAdapter extends ArrayAdapter<ItemResponse> {
 
-    private Context context;
-    private int resource;
-    private UnfollowItemListener unfollowItemListener;
+    private final Context context;
+    private final int resource;
+    private final FollowedItemsActionsListener followedItemsActionsListener;
 
-    public FollowedItemAdapter(@NonNull Context context, int resource, @NonNull List<ItemResponse> objects, UnfollowItemListener unfollowItemListener) {
+    public FollowedItemAdapter(Context context,
+                               int resource,
+                               List<ItemResponse> objects,
+                               FollowedItemsActionsListener followedItemsActionsListener) {
         super(context, resource, objects);
         this.context = context;
         this.resource = resource;
-        this.unfollowItemListener = unfollowItemListener; // Initialize the listener
+        this.followedItemsActionsListener = followedItemsActionsListener; // Initialize the listener
     }
 
     @NonNull
     @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+    public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
             convertView = LayoutInflater.from(context).inflate(resource, parent, false);
         }
@@ -41,23 +45,17 @@ public class FollowedItemAdapter extends ArrayAdapter<ItemResponse> {
 
         ItemResponse item = getItem(position);
 
-        if (item != null) {
-            itemNameTextView.setText(item.getName());
-
-            // Set onClickListener for the unfollow button
-            unfollowButton.setOnClickListener(v -> {
-                // Notify the listener when the Unfollow button is clicked
-                if (unfollowItemListener != null) {
-                    unfollowItemListener.onUnfollowItem(item);
-                }
-            });
+        if (item == null) {
+            return convertView;
         }
 
-        return convertView;
-    }
+        itemNameTextView.setText(item.getName());
+        itemNameTextView.setOnClickListener(v ->
+                followedItemsActionsListener.goToItemDetailsActivity(item));
+        unfollowButton.setOnClickListener(v ->
+                followedItemsActionsListener.onUnfollowItem(item));
 
-    public interface UnfollowItemListener {
-        void onUnfollowItem(ItemResponse item);
+        return convertView;
     }
 
     @Override

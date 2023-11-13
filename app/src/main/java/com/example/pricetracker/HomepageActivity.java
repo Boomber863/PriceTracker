@@ -13,6 +13,8 @@ import android.widget.ListView;
 import android.widget.Spinner;
 
 import com.example.pricetracker.api.provider.ItemServiceProvider;
+import com.example.pricetracker.components.FollowedItemAdapter;
+import com.example.pricetracker.components.FollowedItemsActionsListener;
 import com.example.pricetracker.dto.request.FollowItemRequest;
 import com.example.pricetracker.dto.response.FollowedItemResponse;
 import com.example.pricetracker.dto.response.ItemResponse;
@@ -24,15 +26,12 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class HomepageActivity extends AppCompatActivity implements FollowedItemAdapter.UnfollowItemListener {
+public class HomepageActivity extends AppCompatActivity implements FollowedItemsActionsListener {
 
-    private ArrayAdapter<ItemResponse> itemsAdapter;
     private List<ItemResponse> items;
-    private ArrayAdapter<ItemResponse> followedAdapter;
     private List<ItemResponse> followed;
-
-    private ArrayAdapter<ItemResponse> notFollowedSpinnerAdapter;
     private List<ItemResponse> notFollowed;
+    private ArrayAdapter<ItemResponse> notFollowedSpinnerAdapter;
     private Spinner notFollowedSpinner;
     private ListView followedListView;
     private FollowedItemAdapter followedItemAdapter;
@@ -44,21 +43,22 @@ public class HomepageActivity extends AppCompatActivity implements FollowedItemA
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_homepage);
 
-
-
+        // ALL ITEMS IN DATABASE
         items = new ArrayList<>();
+        // ITEMS FOLLOWED BY USER
         followed = new ArrayList<>();
-        itemsAdapter = new ArrayAdapter<>(this, R.layout.list_item_followed, items);
-        followedAdapter = new ArrayAdapter<>(this, R.layout.list_item_followed, followed);
-
+        // NOT FOLLOWED ITEMS
         notFollowed = new ArrayList<>();
+
+        followedItemAdapter = new FollowedItemAdapter(this, R.layout.list_item_followed, followed, this);
         notFollowedSpinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, notFollowed);
         notFollowedSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        notFollowedSpinner = findViewById(R.id.notFollowedSpinner);
-        followedListView = findViewById(R.id.followedList);
-        notFollowedSpinner.setAdapter(notFollowedSpinnerAdapter);
-        followedListView.setAdapter(followedAdapter);
 
+        followedListView = findViewById(R.id.followedList);
+        followedListView.setAdapter(followedItemAdapter);
+
+        notFollowedSpinner = findViewById(R.id.notFollowedSpinner);
+        notFollowedSpinner.setAdapter(notFollowedSpinnerAdapter);
 
         notFollowedSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -75,33 +75,26 @@ public class HomepageActivity extends AppCompatActivity implements FollowedItemA
             }
         });
 
-        followedListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                // Retrieve the clicked item
-                ItemResponse clickedItem = followedAdapter.getItem(position);
+        followedListView.setOnItemClickListener((parent, view, position, id) -> {
+            ItemResponse clickedItem = followedItemAdapter.getItem(position);
+            if (clickedItem != null) {
+                // Create an Intent to start ItemDetailsActivity
+                Intent intent = new Intent(HomepageActivity.this, ItemDetailsActivity.class);
 
-                if (clickedItem != null) {
-                    // Create an Intent to start ItemDetailsActivity
-                    Intent intent = new Intent(HomepageActivity.this, ItemDetailsActivity.class);
+                // Pass the item name as an extra
+                intent.putExtra("itemName", clickedItem.getName());
+                intent.putExtra("itemId", clickedItem.getId());
 
-                    // Pass the item name as an extra
-                    intent.putExtra("itemName", clickedItem.getName());
-                    intent.putExtra("itemId", clickedItem.getId());
-
-                    // Start the new activity
-                    startActivity(intent);
-                }
+                // Start the new activity
+                startActivity(intent);
             }
         });
-
 
         Button followButton = findViewById(R.id.followButton);
         followButton.setOnClickListener(v -> toggleFollowState());
 
         getAvailableItems();
-        getFollowedItems();
     }
 
     private void toggleFollowState() {
@@ -116,15 +109,12 @@ public class HomepageActivity extends AppCompatActivity implements FollowedItemA
         itemsCall.enqueue(new Callback<List<ItemResponse>>() {
             @Override
             public void onResponse(Call<List<ItemResponse>> call, Response<List<ItemResponse>> response) {
-                if(!response.isSuccessful() || response.body() == null) {
+                if (!response.isSuccessful() || response.body() == null) {
                     Log.e("ERROR", "Bad response for getItems");
                     return;
                 }
-                items.clear();
                 items.addAll(response.body());
-                itemsAdapter.notifyDataSetChanged();
-                getNotFollowedItems();
-
+                getFollowedItems();
                 Log.d("DEBUG", "All items: " + items.toString());
             }
 
@@ -137,20 +127,17 @@ public class HomepageActivity extends AppCompatActivity implements FollowedItemA
 
 
     private void getFollowedItems() {
+
         Call<List<ItemResponse>> followedCall = ItemServiceProvider.getInstance().getFollowedItems();
         followedCall.enqueue(new Callback<List<ItemResponse>>() {
             @Override
             public void onResponse(Call<List<ItemResponse>> call, Response<List<ItemResponse>> response) {
-                if(!response.isSuccessful() || response.body() == null) {
+                if (!response.isSuccessful() || response.body() == null) {
                     Log.e("ERROR", "Bad response for getFollowedItems");
                     return;
                 }
-                followed.clear();
                 followed.addAll(response.body());
-                followedAdapter.notifyDataSetChanged();
                 getNotFollowedItems();
-                updateFollowedListView();
-
                 Log.d("DEBUG", "Followed: " + followed.toString());
             }
 
@@ -161,37 +148,42 @@ public class HomepageActivity extends AppCompatActivity implements FollowedItemA
         });
     }
 
-    private void updateFollowedListView() {
-        if (followedItemAdapter == null) {
-            followedItemAdapter = new FollowedItemAdapter(this, R.layout.list_item_followed, followed, this);
-            followedListView.setAdapter(followedItemAdapter);
-        } else {
-            followedItemAdapter.clear();
-            followedItemAdapter.addAll(followed);
-            followedItemAdapter.notifyDataSetChanged();
-        }
-    }
-
     @Override
     public void onUnfollowItem(ItemResponse item) {
         unfollowItem(item);
     }
 
-    private void getNotFollowedItems() {
-        notFollowed.clear();
+    @Override
+    public void goToItemDetailsActivity(ItemResponse item) {
+        // Create an Intent to start ItemDetailsActivity
+        Intent intent = new Intent(HomepageActivity.this, ItemDetailsActivity.class);
 
-        for (ItemResponse item : items) {
+        // Pass the item name as an extra
+        intent.putExtra("itemName", item.getName());
+        intent.putExtra("itemId", item.getId());
+
+        // Start the new activity
+        startActivity(intent);
+    }
+
+    private void getNotFollowedItems() {
+        items.forEach(item -> {
             if (!followed.contains(item)) {
                 notFollowed.add(item);
             }
-        }
-
-        notFollowedSpinnerAdapter.notifyDataSetChanged();
-
+        });
+        refreshAdapters();
         Log.d("DEBUG", "Added not followed: " + notFollowed.toString());
     }
 
+    private void refreshAdapters() {
+        followedItemAdapter.notifyDataSetChanged();
+        notFollowedSpinnerAdapter.notifyDataSetChanged();
+    }
+
+
     private void followItem(ItemResponse selectedItem) {
+
         FollowItemRequest followItemRequest = new FollowItemRequest(selectedItem.getId());
         Call<FollowedItemResponse> followCall = ItemServiceProvider.getInstance().followItem(followItemRequest);
         followCall.enqueue(new Callback<FollowedItemResponse>() {
@@ -204,15 +196,8 @@ public class HomepageActivity extends AppCompatActivity implements FollowedItemA
                 followed.add(selectedItem);
                 notFollowed.remove(selectedItem);
 
-                followedAdapter.notifyDataSetChanged();
+                followedItemAdapter.notifyDataSetChanged();
                 notFollowedSpinnerAdapter.notifyDataSetChanged();
-
-                if (followedItemAdapter == null) {
-                    followedItemAdapter = new FollowedItemAdapter(HomepageActivity.this, R.layout.list_item_followed, followed, HomepageActivity.this);
-                    followedListView.setAdapter(followedItemAdapter);
-                } else {
-                    followedItemAdapter.notifyDataSetChanged();
-                }
             }
 
             @Override
@@ -223,6 +208,7 @@ public class HomepageActivity extends AppCompatActivity implements FollowedItemA
     }
 
     private void unfollowItem(ItemResponse selectedItem) {
+
         FollowItemRequest unfollowItemRequest = new FollowItemRequest(selectedItem.getId());
         Call<FollowedItemResponse> unfollowCall = ItemServiceProvider.getInstance().unfollowItem(unfollowItemRequest);
         unfollowCall.enqueue(new Callback<FollowedItemResponse>() {
@@ -235,15 +221,8 @@ public class HomepageActivity extends AppCompatActivity implements FollowedItemA
                 followed.remove(selectedItem);
                 notFollowed.add(selectedItem);
 
-                followedAdapter.notifyDataSetChanged();
+                followedItemAdapter.notifyDataSetChanged();
                 notFollowedSpinnerAdapter.notifyDataSetChanged();
-
-                if (followedItemAdapter == null) {
-                    followedItemAdapter = new FollowedItemAdapter(HomepageActivity.this, R.layout.list_item_followed, followed, HomepageActivity.this);
-                    followedListView.setAdapter(followedItemAdapter);
-                } else {
-                    followedItemAdapter.notifyDataSetChanged();
-                }
             }
 
             @Override
