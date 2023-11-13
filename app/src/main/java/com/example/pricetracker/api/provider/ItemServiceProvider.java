@@ -4,6 +4,9 @@ import com.example.pricetracker.api.ItemService;
 import com.example.pricetracker.api.ServerUrls;
 import com.example.pricetracker.api.headers.AuthTokenException;
 import com.example.pricetracker.api.headers.AuthorizationUtils;
+import com.example.pricetracker.dto.request.FollowItemRequest;
+import com.example.pricetracker.dto.response.FollowedItemResponse;
+import com.example.pricetracker.dto.response.ItemPriceResponse;
 import com.example.pricetracker.dto.response.ItemResponse;
 
 import java.util.List;
@@ -42,5 +45,20 @@ public class ItemServiceProvider {
         return itemService.getItems(authToken);
     }
 
-    // TODO: IMPLEMENT OTHER ITEM METHODS AS ABOVE
+
+    public Call<List<ItemResponse>> getFollowedItems() {
+        return itemService.getFollowedItems(authToken);
+    }
+
+    public Call<List<ItemPriceResponse>> getItemPrices() {
+        return itemService.getItemPrices(authToken);
+    }
+
+    public Call<FollowedItemResponse> followItem(FollowItemRequest followItemRequest) {
+        return itemService.followItem(authToken, followItemRequest);
+    }
+
+    public Call<FollowedItemResponse> unfollowItem(FollowItemRequest followItemRequest) {
+        return itemService.unfollowItem(authToken, followItemRequest);
+    }
 }
