@@ -7,4 +7,8 @@ public class FollowItemRequest {
     public FollowItemRequest(int itemId) {
         this.item_id = itemId;
     }
+
+    public int getItemId() {
+        return item_id;
+    }
 }
