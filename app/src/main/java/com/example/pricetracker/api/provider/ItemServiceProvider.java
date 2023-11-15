@@ -2,8 +2,7 @@ package com.example.pricetracker.api.provider;
 
 import com.example.pricetracker.api.ItemService;
 import com.example.pricetracker.api.ServerUrls;
-import com.example.pricetracker.api.headers.AuthTokenException;
-import com.example.pricetracker.api.headers.AuthorizationUtils;
+import com.example.pricetracker.api.headers.AuthorizationProvider;
 import com.example.pricetracker.dto.request.FollowItemRequest;
 import com.example.pricetracker.dto.response.FollowedItemResponse;
 import com.example.pricetracker.dto.response.ItemPriceResponse;
@@ -19,7 +18,7 @@ public class ItemServiceProvider {
 
     private static ItemServiceProvider instance = null;
     private final ItemService itemService;
-    private final String authToken;
+    private final AuthorizationProvider authorizationProvider;
 
     private ItemServiceProvider() {
         Retrofit retrofit = new Retrofit.Builder()
@@ -27,11 +26,7 @@ public class ItemServiceProvider {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         this.itemService = retrofit.create(ItemService.class);
-        try {
-            this.authToken = AuthorizationUtils.getAuthTokenFormatted();
-        } catch (AuthTokenException e) {
-            throw new RuntimeException(e);
-        }
+        this.authorizationProvider = AuthorizationProvider.getInstance();
     }
 
     public static ItemServiceProvider getInstance() {
@@ -42,23 +37,22 @@ public class ItemServiceProvider {
     }
 
     public Call<List<ItemResponse>> getItems() {
-        return itemService.getItems(authToken);
+        return itemService.getItems(authorizationProvider.getAuthTokenFormatted());
     }
 
-
     public Call<List<ItemResponse>> getFollowedItems() {
-        return itemService.getFollowedItems(authToken);
+        return itemService.getFollowedItems(authorizationProvider.getAuthTokenFormatted());
     }
 
     public Call<List<ItemPriceResponse>> getItemPrices(int itemId) {
-        return itemService.getItemPrices(authToken, itemId);
+        return itemService.getItemPrices(authorizationProvider.getAuthTokenFormatted(), itemId);
     }
 
     public Call<FollowedItemResponse> followItem(FollowItemRequest followItemRequest) {
-        return itemService.followItem(authToken, followItemRequest);
+        return itemService.followItem(authorizationProvider.getAuthTokenFormatted(), followItemRequest);
     }
 
     public Call<FollowedItemResponse> unfollowItem(FollowItemRequest followItemRequest) {
-        return itemService.unfollowItem(authToken, followItemRequest);
+        return itemService.unfollowItem(authorizationProvider.getAuthTokenFormatted(), followItemRequest);
     }
 }

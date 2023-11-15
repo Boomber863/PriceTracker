@@ -96,7 +96,12 @@ public class ItemDetailsActivity extends AppCompatActivity {
         cartesian.yAxis(0).stroke("white");
         cartesian.yAxis(0).labels().padding(3d, 3d, 3d, 3d);
         cartesian.yAxis(0).labels().fontColor("white");
-        cartesian.yScale().ticks().interval(50d);
+
+        double max = prices.stream().mapToDouble(ItemPriceResponse::getPrice).max().orElse(100);
+        double min = prices.stream().mapToDouble(ItemPriceResponse::getPrice).min().orElse(10);
+        double div = prices.size() != 0 ? prices.size() : 1;
+        double interval = Math.round((max - min) / div * 10d) / 10d;
+        cartesian.yScale().ticks().interval(interval);
 
         // HERE PRICES ARE PREPARED
 
