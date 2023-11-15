@@ -51,7 +51,7 @@ public class HomepageActivity extends AppCompatActivity implements FollowedItems
         notFollowed = new ArrayList<>();
 
         followedItemAdapter = new FollowedItemAdapter(this, R.layout.list_item_followed, followed, this);
-        notFollowedSpinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, notFollowed);
+        notFollowedSpinnerAdapter = new ArrayAdapter<>(this, R.layout.spinner_dropdown_item, notFollowed);
         notFollowedSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         followedListView = findViewById(R.id.followedList);
@@ -59,6 +59,7 @@ public class HomepageActivity extends AppCompatActivity implements FollowedItems
 
         notFollowedSpinner = findViewById(R.id.notFollowedSpinner);
         notFollowedSpinner.setAdapter(notFollowedSpinnerAdapter);
+
 
         notFollowedSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -94,7 +95,17 @@ public class HomepageActivity extends AppCompatActivity implements FollowedItems
         Button followButton = findViewById(R.id.followButton);
         followButton.setOnClickListener(v -> toggleFollowState());
 
+        Button logoutButton = findViewById(R.id.logoutButton);
+        logoutButton.setOnClickListener(v -> handleLogout());
+
         getAvailableItems();
+    }
+
+    private void handleLogout(){
+
+        Intent intent = new Intent(HomepageActivity.this, MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     private void toggleFollowState() {
