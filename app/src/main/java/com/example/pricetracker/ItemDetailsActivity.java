@@ -134,7 +134,7 @@ public class ItemDetailsActivity extends AppCompatActivity {
         cartesian.legend().fontSize(13d);
         cartesian.legend().fontStyle("bold");
         cartesian.legend().fontColor("white");
-        String background = String.format("#%06x", ContextCompat.getColor(this, R.color.background) & 0xffffff);
+        String background = String.format("#%06x", ContextCompat.getColor(this, R.color.dark_black) & 0xffffff);
         cartesian.background().fill(background); // kolor tla
         cartesian.dataArea().background().fill("white 0.2");
         cartesian.legend().padding(0d, 0d, 10d, 0d);
