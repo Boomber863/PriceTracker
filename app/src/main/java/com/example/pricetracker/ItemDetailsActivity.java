@@ -5,6 +5,7 @@ import android.util.Log;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.anychart.AnyChart;
 import com.anychart.AnyChartView;
@@ -17,6 +18,7 @@ import com.anychart.data.Set;
 import com.anychart.enums.Anchor;
 import com.anychart.enums.MarkerType;
 import com.anychart.enums.TooltipPositionMode;
+import com.anychart.scales.DateTime;
 import com.example.pricetracker.api.provider.ItemServiceProvider;
 import com.example.pricetracker.dto.response.ItemPriceResponse;
 
@@ -79,9 +81,27 @@ public class ItemDetailsActivity extends AppCompatActivity {
         cartesian.crosshair().yLabel(true);
         cartesian.tooltip().positionMode(TooltipPositionMode.POINT);
 
+        cartesian.yGrid(0).enabled(true);
+        cartesian.yGrid(0).stroke("Gray");
+
         cartesian.xAxis(0).title("Date");
+        cartesian.xAxis(0).title().fontColor("white");
+        cartesian.xAxis(0).stroke("white");
         cartesian.xAxis(0).labels().padding(3d, 3d, 3d, 3d);
+        cartesian.xAxis(0).labels().fontColor("white");
+        cartesian.xScale(DateTime.instantiate());
+
         cartesian.yAxis(0).title("Price (PLN)");
+        cartesian.yAxis(0).title().fontColor("white");
+        cartesian.yAxis(0).stroke("white");
+        cartesian.yAxis(0).labels().padding(3d, 3d, 3d, 3d);
+        cartesian.yAxis(0).labels().fontColor("white");
+
+        double max = prices.stream().mapToDouble(ItemPriceResponse::getPrice).max().orElse(100);
+        double min = prices.stream().mapToDouble(ItemPriceResponse::getPrice).min().orElse(10);
+        double div = prices.size() != 0 ? prices.size() : 1;
+        double interval = Math.round((max - min) / div * 10d) / 10d;
+        cartesian.yScale().ticks().interval(interval);
 
         // HERE PRICES ARE PREPARED
 
@@ -98,6 +118,7 @@ public class ItemDetailsActivity extends AppCompatActivity {
         Mapping mapping = set.mapAs("{ x: 'x', value: 'value' }");
 
         Line series = cartesian.line(mapping);
+        series.stroke("3 cyan"); //grubosc i kolor linii
         series.name(itemName);
         series.hovered().markers().enabled(true);
         series.hovered().markers()
@@ -111,6 +132,11 @@ public class ItemDetailsActivity extends AppCompatActivity {
 
         cartesian.legend().enabled(true);
         cartesian.legend().fontSize(13d);
+        cartesian.legend().fontStyle("bold");
+        cartesian.legend().fontColor("white");
+        String background = String.format("#%06x", ContextCompat.getColor(this, R.color.background) & 0xffffff);
+        cartesian.background().fill(background); //kolor tla
+        cartesian.dataArea().background().fill("white 0.2");
         cartesian.legend().padding(0d, 0d, 10d, 0d);
         anyChartView.setChart(cartesian);
     }

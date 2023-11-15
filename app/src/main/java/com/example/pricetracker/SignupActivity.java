@@ -9,11 +9,10 @@ import android.widget.EditText;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.pricetracker.api.headers.AuthTokenException;
-import com.example.pricetracker.api.headers.AuthorizationUtils;
+import com.example.pricetracker.api.headers.AuthorizationProvider;
 import com.example.pricetracker.api.provider.AuthorizationServiceProvider;
 import com.example.pricetracker.components.CustomToast;
 import com.example.pricetracker.dto.request.RegistrationRequest;
-import com.example.pricetracker.dto.response.AuthTokenResponse;
 import com.example.pricetracker.dto.response.SignupResponse;
 
 import retrofit2.Call;
@@ -56,7 +55,7 @@ public class SignupActivity extends AppCompatActivity {
                 }
                 final SignupResponse signupResponse = response.body();
                 try {
-                    AuthorizationUtils.setAuthorizationData(signupResponse.getToken());
+                    AuthorizationProvider.getInstance().setAuthorizationData(signupResponse.getToken());
                     Log.i("SIGNUP SUCCESS", "User successfully signed up");
                     startActivity(new Intent(SignupActivity.this, HomepageActivity.class));
                 } catch (AuthTokenException e) {

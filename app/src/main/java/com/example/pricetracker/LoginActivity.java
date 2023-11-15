@@ -5,12 +5,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.pricetracker.api.headers.AuthTokenException;
-import com.example.pricetracker.api.headers.AuthorizationUtils;
+import com.example.pricetracker.api.headers.AuthorizationProvider;
 import com.example.pricetracker.api.provider.AuthorizationServiceProvider;
 import com.example.pricetracker.components.CustomToast;
 import com.example.pricetracker.dto.request.LoginRequest;
@@ -54,7 +53,7 @@ public class LoginActivity extends AppCompatActivity {
                 }
                 final AuthTokenResponse authTokenResponse = response.body();
                 try {
-                    AuthorizationUtils.setAuthorizationData(authTokenResponse);
+                    AuthorizationProvider.getInstance().setAuthorizationData(authTokenResponse);
                     Log.i("LOGIN SUCCESS", "User successfully logged in");
                     startActivity(new Intent(LoginActivity.this, HomepageActivity.class));
                 } catch (AuthTokenException e) {
