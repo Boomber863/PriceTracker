@@ -7,7 +7,7 @@
     android:padding="16dp"
     tools:context=".MainActivity"
     android:gravity="center"
-    android:background="@color/white"
+    android:background="@color/dark_black"
     android:orientation="vertical">
 
     <ImageView
