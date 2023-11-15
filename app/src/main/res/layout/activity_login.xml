@@ -1,35 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
-    tools:context=".LoginActivity">
+    tools:context=".LoginActivity"
+    android:background="@color/white"
+    android:gravity="center"
+    android:showDividers="middle"
+    android:divider="@drawable/empty_tall_divider"
+    android:orientation="vertical">
 
     <EditText
         android:id="@+id/loginUsername"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="300dp"
+        android:layout_height="60dp"
+        android:autofillHints="username"
         android:hint="@string/username"
-        android:layout_marginTop="58dp"
-        android:inputType="text" />
+        android:inputType="text"
+        android:textColor="#ffffff"
+        android:textColorHint="#F0F0F0" />
 
     <EditText
         android:id="@+id/loginPassword"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/loginUsername"
-        android:layout_marginTop="58dp"
+        android:layout_width="300dp"
+        android:layout_height="60dp"
+        android:autofillHints="password"
         android:hint="@string/password"
-        android:inputType="textPassword" />
+        android:inputType="textPassword"
+        android:textColor="#ffffff"
+        android:textColorHint="#F0F0F0" />
 
     <Button
         android:id="@+id/loginButton"
-        android:layout_width="match_parent"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/loginPassword"
-        android:layout_marginTop="58dp"
         android:text="@string/login" />
 
-</RelativeLayout>
+</LinearLayout>

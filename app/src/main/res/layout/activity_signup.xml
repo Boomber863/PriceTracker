@@ -1,44 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
+    android:gravity="center"
+    android:background="@color/white"
+    android:showDividers="middle"
+    android:orientation="vertical"
+    android:divider="@drawable/empty_tall_divider"
     tools:context=".LoginActivity">
 
     <EditText
         android:id="@+id/signupUsername"
-        android:layout_width="match_parent"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:hint="@string/username"
-        android:layout_marginTop="58dp"
+        android:textColorHint="#ffffff"
+        android:textColor="#ffffff"
         android:inputType="text" />
 
     <EditText
         android:id="@+id/signupEmail"
-        android:layout_width="match_parent"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/signupUsername"
-        android:layout_marginTop="58dp"
         android:hint="@string/email"
-        android:inputType="textEmailAddress" />
+        android:inputType="textEmailAddress"
+        android:textColorHint="#ffffff"
+        android:textColor="#ffffff" />
 
     <EditText
         android:id="@+id/signupPassword"
-        android:layout_width="match_parent"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/signupEmail"
-        android:layout_marginTop="58dp"
         android:hint="@string/password"
-        android:inputType="textPassword" />
+        android:textColorHint="#ffffff"
+        android:inputType="textPassword"
+        android:textColor="#ffffff" />
 
     <Button
         android:id="@+id/signupButton"
-        android:layout_width="match_parent"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/signupPassword"
-        android:layout_marginTop="58dp"
         android:text="@string/signup" />
 
-</RelativeLayout>
+</LinearLayout>
