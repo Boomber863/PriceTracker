@@ -26,6 +26,10 @@ public interface ItemService {
     Call<List<ItemPriceResponse>> getItemPrices(@Header("Authorization") String token,
                                                 @Query("item_id") int itemId);
 
+    @GET("/newest_item_price")
+    Call<ItemPriceResponse> getLatestItemPrice(@Header("Authorization") String token,
+                                                @Query("item_id") int itemId);
+
     @POST("/follow")
     Call<FollowedItemResponse> followItem(@Header("Authorization") String token,
                                           @Body FollowItemRequest followItemRequest);

@@ -1,13 +1,15 @@
 package com.example.pricetracker.dto.response;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
-public class ItemResponse {
+public class ItemResponse implements Serializable {
 
     private String name;
     private int id;
     private List<CommentResponse> comments;
+    private String item_img_url;
 
     public String getName() {
         return name;
@@ -19,6 +21,10 @@ public class ItemResponse {
 
     public List<CommentResponse> getComments() {
         return comments;
+    }
+
+    public String getImageUrl() {
+        return item_img_url;
     }
 
     @Override

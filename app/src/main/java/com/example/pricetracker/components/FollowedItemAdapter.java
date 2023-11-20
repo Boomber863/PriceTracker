@@ -1,45 +1,46 @@
 package com.example.pricetracker.components;
 
-import android.content.Context;
+import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.example.pricetracker.R;
 import com.example.pricetracker.dto.response.ItemResponse;
+import com.example.pricetracker.utils.BitmapExtractor;
 
 import java.util.List;
 import java.util.Objects;
 
 public class FollowedItemAdapter extends ArrayAdapter<ItemResponse> {
 
-    private final Context context;
+    private final Activity activity;
     private final int resource;
     private final FollowedItemsActionsListener followedItemsActionsListener;
 
-    public FollowedItemAdapter(Context context,
+    public FollowedItemAdapter(Activity activity,
                                int resource,
                                List<ItemResponse> objects,
                                FollowedItemsActionsListener followedItemsActionsListener) {
-        super(context, resource, objects);
-        this.context = context;
+        super(activity, resource, objects);
+        this.activity = activity;
         this.resource = resource;
-        this.followedItemsActionsListener = followedItemsActionsListener; // Initialize the listener
+        this.followedItemsActionsListener = followedItemsActionsListener;
     }
 
     @NonNull
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
-            convertView = LayoutInflater.from(context).inflate(resource, parent, false);
+            convertView = LayoutInflater.from(activity).inflate(resource, parent, false);
         }
-
+        ImageView itemImageView = convertView.findViewById(R.id.followedItemImage);
         TextView itemNameTextView = convertView.findViewById(R.id.followedItemName);
         Button unfollowButton = convertView.findViewById(R.id.unfollowButton);
 
@@ -54,6 +55,8 @@ public class FollowedItemAdapter extends ArrayAdapter<ItemResponse> {
                 followedItemsActionsListener.goToItemDetailsActivity(item));
         unfollowButton.setOnClickListener(v ->
                 followedItemsActionsListener.onUnfollowItem(item));
+
+        BitmapExtractor.extractBitmapAndSetImage(activity, itemImageView, item.getImageUrl());
 
         return convertView;
     }

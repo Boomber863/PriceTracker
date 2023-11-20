@@ -6,13 +6,19 @@
     android:padding="8dp"
     android:clickable="true">
 
+    <ImageView
+        android:id="@+id/followedItemImage"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:contentDescription="TODO" />
+
     <TextView
         android:id="@+id/followedItemName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textColor="@android:color/white"
         android:layout_weight="1"
-        android:textSize="18sp"/>
+        android:textColor="@android:color/white"
+        android:textSize="18sp" />
 
     <Button
         android:id="@+id/unfollowButton"

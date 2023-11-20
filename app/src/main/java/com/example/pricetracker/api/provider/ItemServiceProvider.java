@@ -48,6 +48,10 @@ public class ItemServiceProvider {
         return itemService.getItemPrices(authorizationProvider.getAuthTokenFormatted(), itemId);
     }
 
+    public Call<ItemPriceResponse> getLatestItemPrice(int itemId) {
+        return itemService.getLatestItemPrice(authorizationProvider.getAuthTokenFormatted(), itemId);
+    }
+
     public Call<FollowedItemResponse> followItem(FollowItemRequest followItemRequest) {
         return itemService.followItem(authorizationProvider.getAuthTokenFormatted(), followItemRequest);
     }
