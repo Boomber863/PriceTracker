@@ -1,10 +1,16 @@
 package com.example.pricetracker;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -15,9 +21,12 @@ import android.widget.Spinner;
 import com.example.pricetracker.api.provider.ItemServiceProvider;
 import com.example.pricetracker.components.FollowedItemAdapter;
 import com.example.pricetracker.components.FollowedItemsActionsListener;
+import com.example.pricetracker.components.ItemViewModel;
 import com.example.pricetracker.dto.request.FollowItemRequest;
 import com.example.pricetracker.dto.response.FollowedItemResponse;
 import com.example.pricetracker.dto.response.ItemResponse;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,22 +35,44 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class HomepageActivity extends AppCompatActivity implements FollowedItemsActionsListener {
+public class HomepageActivity extends AppCompatActivity{
 
-    private List<ItemResponse> items;
-    private List<ItemResponse> followed;
-    private List<ItemResponse> notFollowed;
-    private ArrayAdapter<ItemResponse> notFollowedSpinnerAdapter;
-    private Spinner notFollowedSpinner;
-    private ListView followedListView;
-    private FollowedItemAdapter followedItemAdapter;
+    private static final int ACTION_LIST = R.id.action_list;
+    private static final int ACTION_FOLLOWED = R.id.action_followed;
+    private static final int ACTION_SETTINGS = R.id.action_settings;
+
+    private ItemViewModel itemViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_homepage);
+        itemViewModel = new ViewModelProvider(this).get(ItemViewModel.class);
 
+        // Dodaj Bottom Navigation View Listener
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int itemId = item.getItemId();
+                if (itemId == ACTION_LIST) {
+                    loadFragment(new NotFollowedItemsFragment());
+                    return true;
+                } else if (itemId == ACTION_FOLLOWED) {
+                    loadFragment(new FollowedItemsFragment());
+                    return true;
+                } else if (itemId == ACTION_SETTINGS) {
+                    loadFragment(new SettingsFragment());
+                    return true;
+                }
+                return false;
+            }
+        });
+
+
+        getAvailableItems();
+/*
         // ALL ITEMS IN DATABASE
         items = new ArrayList<>();
         // ITEMS FOLLOWED BY USER
@@ -94,23 +125,32 @@ public class HomepageActivity extends AppCompatActivity implements FollowedItems
 
         Button logoutButton = findViewById(R.id.logoutButton);
         logoutButton.setOnClickListener(v -> handleLogout());
-
-        getAvailableItems();
+*/
     }
 
+    // Metoda do ładowania fragmentów
+    private void loadFragment(Fragment fragment) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.frame_container, fragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
+
+/*
     private void handleLogout() {
 
         Intent intent = new Intent(HomepageActivity.this, MainActivity.class);
         startActivity(intent);
         finish();
-    }
-
+    }*/
+/*
     private void toggleFollowState() {
         ItemResponse selectedItem = (ItemResponse) notFollowedSpinner.getSelectedItem();
         if (selectedItem != null) {
             followItem(selectedItem);
         }
-    }
+    }*/
 
     private void getAvailableItems() {
         Call<List<ItemResponse>> itemsCall = ItemServiceProvider.getInstance().getItems();
@@ -121,9 +161,10 @@ public class HomepageActivity extends AppCompatActivity implements FollowedItems
                     Log.e("ERROR", "Bad response for getItems");
                     return;
                 }
-                items.addAll(response.body());
+                List<ItemResponse> allItems = response.body();
+                itemViewModel.setAllItems(allItems);
                 getFollowedItems();
-                Log.d("DEBUG", "All items: " + items.toString());
+                Log.d("DEBUG", "All items: " + allItems.toString());
             }
 
             @Override
@@ -134,7 +175,6 @@ public class HomepageActivity extends AppCompatActivity implements FollowedItems
     }
 
     private void getFollowedItems() {
-
         Call<List<ItemResponse>> followedCall = ItemServiceProvider.getInstance().getFollowedItems();
         followedCall.enqueue(new Callback<List<ItemResponse>>() {
             @Override
@@ -143,9 +183,10 @@ public class HomepageActivity extends AppCompatActivity implements FollowedItems
                     Log.e("ERROR", "Bad response for getFollowedItems");
                     return;
                 }
-                followed.addAll(response.body());
+                List<ItemResponse> followedItems = response.body();
+                itemViewModel.setFollowedItems(followedItems);
                 getNotFollowedItems();
-                Log.d("DEBUG", "Followed: " + followed.toString());
+                Log.d("DEBUG", "Followed: " + followedItems.toString());
             }
 
             @Override
@@ -155,6 +196,20 @@ public class HomepageActivity extends AppCompatActivity implements FollowedItems
         });
     }
 
+    private void getNotFollowedItems() {
+        List<ItemResponse> allItems = itemViewModel.getAllItemsLiveData().getValue();
+        List<ItemResponse> followedItems = itemViewModel.getFollowedItemsLiveData().getValue();
+
+        if (allItems != null && followedItems != null) {
+            List<ItemResponse> notFollowedItems = new ArrayList<>(allItems);
+            notFollowedItems.removeAll(followedItems);
+
+            // Zapisz dane do ViewModel
+            itemViewModel.setNotFollowedItems(notFollowedItems);
+            Log.d("DEBUG", "Added not followed: " + notFollowedItems.toString());
+        }
+    }
+/*
     @Override
     public void onUnfollowItem(ItemResponse item) {
         unfollowItem(item);
@@ -171,16 +226,6 @@ public class HomepageActivity extends AppCompatActivity implements FollowedItems
 
         // Start the new activity
         startActivity(intent);
-    }
-
-    private void getNotFollowedItems() {
-        items.forEach(item -> {
-            if (!followed.contains(item)) {
-                notFollowed.add(item);
-            }
-        });
-        refreshAdapters();
-        Log.d("DEBUG", "Added not followed: " + notFollowed.toString());
     }
 
     private void refreshAdapters() {
@@ -237,5 +282,5 @@ public class HomepageActivity extends AppCompatActivity implements FollowedItems
             }
         });
     }
-
+*/
 }
