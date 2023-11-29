@@ -6,18 +6,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
 import com.example.pricetracker.R;
 import com.example.pricetracker.dto.response.ItemResponse;
-import com.example.pricetracker.utils.BitmapExtractor;
 
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * ## NOT USED ##
+ */
 public class FollowedItemAdapter extends ArrayAdapter<ItemResponse> {
 
     private final Activity activity;
@@ -40,7 +41,6 @@ public class FollowedItemAdapter extends ArrayAdapter<ItemResponse> {
         if (convertView == null) {
             convertView = LayoutInflater.from(activity).inflate(resource, parent, false);
         }
-        ImageView itemImageView = convertView.findViewById(R.id.followedItemImage);
         TextView itemNameTextView = convertView.findViewById(R.id.followedItemName);
         Button unfollowButton = convertView.findViewById(R.id.unfollowButton);
 
@@ -55,9 +55,6 @@ public class FollowedItemAdapter extends ArrayAdapter<ItemResponse> {
                 followedItemsActionsListener.goToItemDetailsActivity(item));
         unfollowButton.setOnClickListener(v ->
                 followedItemsActionsListener.onUnfollowItem(item));
-
-        BitmapExtractor.extractBitmapAndSetImage(activity, itemImageView, item.getImageUrl());
-
         return convertView;
     }
 
