@@ -49,6 +49,7 @@ public class HomepageActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_homepage);
         itemViewModel = new ViewModelProvider(this).get(ItemViewModel.class);
+        loadFragment(new NotFollowedItemsFragment());
 
         // Dodaj Bottom Navigation View Listener
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
