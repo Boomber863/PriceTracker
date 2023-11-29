@@ -11,14 +11,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 
 import com.example.pricetracker.components.ItemViewModel;
-import com.example.pricetracker.dto.response.ItemResponse;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class NotFollowedItemsFragment extends Fragment {
 

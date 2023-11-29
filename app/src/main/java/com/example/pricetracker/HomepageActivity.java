@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -49,25 +50,28 @@ public class HomepageActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_homepage);
         itemViewModel = new ViewModelProvider(this).get(ItemViewModel.class);
-        loadFragment(new NotFollowedItemsFragment());
+
+        ViewPager2 viewPager = findViewById(R.id.viewPager);
+        viewPager.setAdapter(new FragmentAdapter(this));
+
+
 
         // Dodaj Bottom Navigation View Listener
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+
+        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                bottomNavigationView.setSelectedItemId(getSelectedItemId(position));
+            }
+        });
+
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int itemId = item.getItemId();
-                if (itemId == ACTION_LIST) {
-                    loadFragment(new NotFollowedItemsFragment());
-                    return true;
-                } else if (itemId == ACTION_FOLLOWED) {
-                    loadFragment(new FollowedItemsFragment());
-                    return true;
-                } else if (itemId == ACTION_SETTINGS) {
-                    loadFragment(new SettingsFragment());
-                    return true;
-                }
-                return false;
+                viewPager.setCurrentItem(getSelectedItemPosition(itemId), true);
+                return true;
             }
         });
 
@@ -129,13 +133,26 @@ public class HomepageActivity extends AppCompatActivity{
 */
     }
 
-    // Metoda do ładowania fragmentów
-    private void loadFragment(Fragment fragment) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.frame_container, fragment);
-        transaction.addToBackStack(null);
-        transaction.commit();
+    private int getSelectedItemPosition(int itemId) {
+        if (itemId == ACTION_LIST) {
+            return 0;
+        } else if (itemId == ACTION_FOLLOWED) {
+            return 1;
+        } else if (itemId == ACTION_SETTINGS) {
+            return 2;
+        }
+        return 0;
+    }
+
+    private int getSelectedItemId(int position) {
+        if (position == 0) {
+            return ACTION_LIST;
+        } else if (position == 1) {
+            return ACTION_FOLLOWED;
+        } else if (position == 2) {
+            return ACTION_SETTINGS;
+        }
+        return 0;
     }
 
 /*
