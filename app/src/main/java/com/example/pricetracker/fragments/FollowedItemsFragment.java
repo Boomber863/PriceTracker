@@ -1,4 +1,4 @@
-package com.example.pricetracker;
+package com.example.pricetracker.fragments;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,10 +11,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.pricetracker.R;
 import com.example.pricetracker.components.ItemViewModel;
 import com.example.pricetracker.dto.response.ItemResponse;
-
-import java.util.List;
 
 public class FollowedItemsFragment extends Fragment {
 

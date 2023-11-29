@@ -1,18 +1,18 @@
 package com.example.pricetracker.components;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.pricetracker.dto.response.ItemResponse;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ItemViewModel extends ViewModel {
 
-    private MutableLiveData<List<ItemResponse>> allItemsLiveData = new MutableLiveData<>();
-    private MutableLiveData<List<ItemResponse>> followedItemsLiveData = new MutableLiveData<>();
-    private MutableLiveData<List<ItemResponse>> notFollowedItemsLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<ItemResponse>> allItemsLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<ItemResponse>> followedItemsLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<ItemResponse>> notFollowedItemsLiveData = new MutableLiveData<>();
 
     public LiveData<List<ItemResponse>> getAllItemsLiveData() {
         return allItemsLiveData;
@@ -26,7 +26,6 @@ public class ItemViewModel extends ViewModel {
         return notFollowedItemsLiveData;
     }
 
-
     public void setAllItems(List<ItemResponse> allItems) {
         allItemsLiveData.setValue(allItems);
     }
@@ -37,13 +36,5 @@ public class ItemViewModel extends ViewModel {
 
     public void setNotFollowedItems(List<ItemResponse> notFollowedItems) {
         notFollowedItemsLiveData.setValue(notFollowedItems);
-    }
-
-    public void addFollowedItem(ItemResponse item) {
-        List<ItemResponse> followedItems = getFollowedItemsLiveData().getValue();
-        if (followedItems != null) {
-            followedItems.add(item);
-            setFollowedItems(followedItems);
-        }
     }
 }

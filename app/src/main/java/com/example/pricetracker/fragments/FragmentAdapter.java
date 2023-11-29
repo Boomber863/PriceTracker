@@ -1,4 +1,4 @@
-package com.example.pricetracker;
+package com.example.pricetracker.fragments;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;

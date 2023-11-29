@@ -1,4 +1,4 @@
-package com.example.pricetracker;
+package com.example.pricetracker.fragments;
 
 import android.os.Bundle;
 
@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.pricetracker.R;
 import com.example.pricetracker.components.ItemViewModel;
 
 import java.util.ArrayList;

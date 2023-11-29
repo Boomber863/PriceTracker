@@ -1,4 +1,4 @@
-package com.example.pricetracker;
+package com.example.pricetracker.fragments;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,7 +10,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.pricetracker.dto.response.ItemPriceResponse;
+import com.example.pricetracker.R;
+import com.example.pricetracker.api.ServerUrls;
 import com.example.pricetracker.dto.response.ItemResponse;
 import com.squareup.picasso.Picasso;
 
@@ -44,16 +45,21 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
         holder.productNameTextView.setText(item.getName());
         // Set other data as needed
 
-        //zdjecie
-        //nie dziala nw czemu
+        String url = item.getImageUrl();
+        if (url == null) {
+            url = "http://10.0.2.2:8000/static/product_img/example.jpg";
+        }
+        // THIS ENSURES THAT URL IS ACCESSIBLE FROM ANDROID EMULATOR
+        else if (url.startsWith("http://127.0.0.1")) {
+            url = url.replace("http://127.0.0.1:8000", ServerUrls.SERVER_URL);
+        }
+
         Picasso.get()
-                .load(item.getImageUrl())
-                .resize(50, 50)
+                .load(url)
+                .resize(300, 300)
                 .placeholder(R.drawable.baseline_sports_basketball_24)
                 .error(R.drawable.baseline_star_24)
                 .into(holder.productImageView);
-        //Picasso.get().load(item.getImageUrl()).into(holder.productImageView);
-        // Add click listeners or any other interactions if necessary
     }
 
     @Override

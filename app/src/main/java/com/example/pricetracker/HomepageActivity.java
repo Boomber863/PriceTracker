@@ -1,33 +1,18 @@
 package com.example.pricetracker;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ListView;
-import android.widget.Spinner;
 
 import com.example.pricetracker.api.provider.ItemServiceProvider;
-import com.example.pricetracker.components.FollowedItemAdapter;
-import com.example.pricetracker.components.FollowedItemsActionsListener;
 import com.example.pricetracker.components.ItemViewModel;
-import com.example.pricetracker.dto.request.FollowItemRequest;
-import com.example.pricetracker.dto.response.FollowedItemResponse;
 import com.example.pricetracker.dto.response.ItemResponse;
+import com.example.pricetracker.fragments.FragmentAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +21,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class HomepageActivity extends AppCompatActivity{
+public class HomepageActivity extends AppCompatActivity {
 
     private static final int ACTION_LIST = R.id.action_list;
     private static final int ACTION_FOLLOWED = R.id.action_followed;
@@ -54,8 +39,6 @@ public class HomepageActivity extends AppCompatActivity{
         ViewPager2 viewPager = findViewById(R.id.viewPager);
         viewPager.setAdapter(new FragmentAdapter(this));
 
-
-
         // Dodaj Bottom Navigation View Listener
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
 
@@ -66,71 +49,12 @@ public class HomepageActivity extends AppCompatActivity{
             }
         });
 
-        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                int itemId = item.getItemId();
-                viewPager.setCurrentItem(getSelectedItemPosition(itemId), true);
-                return true;
-            }
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+            viewPager.setCurrentItem(getSelectedItemPosition(itemId), true);
+            return true;
         });
-
-
         getAvailableItems();
-/*
-        // ALL ITEMS IN DATABASE
-        items = new ArrayList<>();
-        // ITEMS FOLLOWED BY USER
-        followed = new ArrayList<>();
-        // NOT FOLLOWED ITEMS
-        notFollowed = new ArrayList<>();
-
-        followedItemAdapter = new FollowedItemAdapter(this, R.layout.list_item_followed, followed, this);
-        notFollowedSpinnerAdapter = new ArrayAdapter<>(this, R.layout.spinner_dropdown_item, notFollowed);
-        notFollowedSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        followedListView = findViewById(R.id.followedList);
-        followedListView.setAdapter(followedItemAdapter);
-
-        notFollowedSpinner = findViewById(R.id.notFollowedSpinner);
-        notFollowedSpinner.setAdapter(notFollowedSpinnerAdapter);
-
-        notFollowedSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                ItemResponse selectedItem = (ItemResponse) parentView.getItemAtPosition(position);
-                if (selectedItem != null) {
-                    // Do something with the selected item if needed
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parentView) {
-                // Do nothing
-            }
-        });
-
-        followedListView.setOnItemClickListener((parent, view, position, id) -> {
-            ItemResponse clickedItem = followedItemAdapter.getItem(position);
-            if (clickedItem != null) {
-                // Create an Intent to start ItemDetailsActivity
-                Intent intent = new Intent(HomepageActivity.this, ItemDetailsActivity.class);
-
-                // Pass the item name as an extra
-                intent.putExtra("itemName", clickedItem.getName());
-                intent.putExtra("itemId", clickedItem.getId());
-
-                // Start the new activity
-                startActivity(intent);
-            }
-        });
-
-        Button followButton = findViewById(R.id.followButton);
-        followButton.setOnClickListener(v -> toggleFollowState());
-
-        Button logoutButton = findViewById(R.id.logoutButton);
-        logoutButton.setOnClickListener(v -> handleLogout());
-*/
     }
 
     private int getSelectedItemPosition(int itemId) {
@@ -155,20 +79,11 @@ public class HomepageActivity extends AppCompatActivity{
         return 0;
     }
 
-/*
     private void handleLogout() {
-
         Intent intent = new Intent(HomepageActivity.this, MainActivity.class);
         startActivity(intent);
         finish();
-    }*/
-/*
-    private void toggleFollowState() {
-        ItemResponse selectedItem = (ItemResponse) notFollowedSpinner.getSelectedItem();
-        if (selectedItem != null) {
-            followItem(selectedItem);
-        }
-    }*/
+    }
 
     private void getAvailableItems() {
         Call<List<ItemResponse>> itemsCall = ItemServiceProvider.getInstance().getItems();
@@ -227,6 +142,7 @@ public class HomepageActivity extends AppCompatActivity{
             Log.d("DEBUG", "Added not followed: " + notFollowedItems.toString());
         }
     }
+
 /*
     @Override
     public void onUnfollowItem(ItemResponse item) {
