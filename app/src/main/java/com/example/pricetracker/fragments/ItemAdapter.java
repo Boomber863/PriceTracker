@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pricetracker.R;
 import com.example.pricetracker.api.ServerUrls;
+import com.example.pricetracker.dto.response.ItemPriceResponse;
 import com.example.pricetracker.dto.response.ItemResponse;
 import com.squareup.picasso.Picasso;
 
@@ -41,9 +42,12 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ItemResponse item = itemList.get(position);
 
-        // Bind data to views in the item layout
         holder.productNameTextView.setText(item.getName());
-        // Set other data as needed
+
+        ItemPriceResponse newestPrice = item.getNewestPrice();
+        String priceText = "Price: " + (newestPrice == null ? 0.00 :
+                Math.round(newestPrice.getPrice() * 100.0) / 100.0) + " zl";
+        holder.productPriceTextView.setText(priceText);
 
         String url = item.getImageUrl();
         if (url == null) {
