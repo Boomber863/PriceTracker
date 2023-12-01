@@ -8,7 +8,6 @@ public class ItemResponse implements Serializable {
 
     private String name;
     private int id;
-    private List<CommentResponse> comments;
     private String item_img_url;
     private ItemPriceResponse newest_price;
 
@@ -18,10 +17,6 @@ public class ItemResponse implements Serializable {
 
     public int getId() {
         return id;
-    }
-
-    public List<CommentResponse> getComments() {
-        return comments;
     }
 
     public String getImageUrl() {
