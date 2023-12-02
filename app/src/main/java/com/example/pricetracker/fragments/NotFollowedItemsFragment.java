@@ -17,6 +17,7 @@ import com.example.pricetracker.HomepageActivity;
 import com.example.pricetracker.ItemDetailsActivity;
 import com.example.pricetracker.R;
 import com.example.pricetracker.components.ItemViewModel;
+import com.example.pricetracker.dto.response.ItemResponse;
 
 import java.util.ArrayList;
 
@@ -33,7 +34,7 @@ public class NotFollowedItemsFragment extends Fragment {
         itemViewModel = new ViewModelProvider(requireActivity()).get(ItemViewModel.class);
 
         // Observe changes in the list of not followed items
-        itemViewModel.getNotFollowedItemsLiveData().observe(this, notFollowedItems -> {
+        itemViewModel.getAllItemsLiveData().observe(this, notFollowedItems -> {
             // Update the adapter with the new list of items
             itemAdapter.updateItemList(notFollowedItems);
         });
@@ -52,7 +53,7 @@ public class NotFollowedItemsFragment extends Fragment {
         // Initialize RecyclerView and set its adapter
         itemsRecyclerView = view.findViewById(R.id.recyclerViewList);
         itemsRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        itemAdapter = new ItemAdapter(new ArrayList<>());
+        itemAdapter = new ItemAdapter(new ArrayList<>(), new ArrayList<>(), itemViewModel);
         // Set click listener for the adapter
         itemAdapter.setOnItemClickListener(item -> {
             // Create an Intent to start ItemDetailsActivity

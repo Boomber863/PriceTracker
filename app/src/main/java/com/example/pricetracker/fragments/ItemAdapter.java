@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.pricetracker.R;
 import com.example.pricetracker.api.ServerUrls;
 import com.example.pricetracker.api.provider.ItemServiceProvider;
+import com.example.pricetracker.components.ItemViewModel;
 import com.example.pricetracker.dto.request.FollowItemRequest;
 import com.example.pricetracker.dto.response.FollowedItemResponse;
 import com.example.pricetracker.dto.response.ItemPriceResponse;
@@ -31,10 +32,12 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
     private List<ItemResponse> itemList;
     private List<ItemResponse> followedItemList;
     private OnItemClickListener onItemClickListener;
+    private ItemViewModel itemViewModel;
 
-    public ItemAdapter(List<ItemResponse> itemList) {
+    public ItemAdapter(List<ItemResponse> itemList, List<ItemResponse> followedItemList, ItemViewModel itemViewModel) {
         this.itemList = itemList;
-        this.followedItemList = itemList;
+        this.followedItemList = followedItemList;
+        this.itemViewModel = itemViewModel;
     }
 
     public void updateItemList(List<ItemResponse> newList) {
@@ -139,17 +142,17 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
     }
 
     private void followItem(ItemResponse selectedItem) {
-
         FollowItemRequest followItemRequest = new FollowItemRequest(selectedItem.getId());
         Call<FollowedItemResponse> followCall = ItemServiceProvider.getInstance().followItem(followItemRequest);
         followCall.enqueue(new Callback<FollowedItemResponse>() {
             @Override
             public void onResponse(Call<FollowedItemResponse> call, Response<FollowedItemResponse> response) {
-                if (!response.isSuccessful() || response.body() == null) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // Follow successful, update ViewModel
+                    itemViewModel.addFollowedItem(selectedItem); // Assuming you have a method like this in your ViewModel
+                } else {
                     Log.e("ERROR", "Bad response for followItem");
-                    return;
                 }
-                notifyDataSetChanged();
             }
 
             @Override
@@ -160,17 +163,17 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
     }
 
     private void unfollowItem(ItemResponse selectedItem) {
-
         FollowItemRequest unfollowItemRequest = new FollowItemRequest(selectedItem.getId());
         Call<FollowedItemResponse> unfollowCall = ItemServiceProvider.getInstance().unfollowItem(unfollowItemRequest);
         unfollowCall.enqueue(new Callback<FollowedItemResponse>() {
             @Override
             public void onResponse(Call<FollowedItemResponse> call, Response<FollowedItemResponse> response) {
-                if (!response.isSuccessful() || response.body() == null) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // Unfollow successful, update ViewModel
+                    itemViewModel.removeFollowedItem(selectedItem); // Assuming you have a method like this in your ViewModel
+                } else {
                     Log.e("ERROR", "Bad response for unfollowItem");
-                    return;
                 }
-                notifyDataSetChanged();
             }
 
             @Override
