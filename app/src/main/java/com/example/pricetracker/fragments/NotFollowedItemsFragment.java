@@ -22,6 +22,7 @@ public class NotFollowedItemsFragment extends Fragment {
     private ItemViewModel itemViewModel;
     private RecyclerView itemsRecyclerView;
     private ItemAdapter itemAdapter;
+    private ItemAdapter followedItemAdapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -33,6 +34,12 @@ public class NotFollowedItemsFragment extends Fragment {
         itemViewModel.getNotFollowedItemsLiveData().observe(this, notFollowedItems -> {
             // Update the adapter with the new list of items
             itemAdapter.updateItemList(notFollowedItems);
+        });
+
+        // Observe changes in the list of not followed items
+        itemViewModel.getFollowedItemsLiveData().observe(this, followedItems -> {
+            // Update the adapter with the new list of items
+            itemAdapter.updateFollowedItemList(followedItems);
         });
     }
 

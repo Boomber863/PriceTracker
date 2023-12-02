@@ -21,13 +21,20 @@ import java.util.List;
 public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
 
     private List<ItemResponse> itemList;
+    private List<ItemResponse> followedItemList;
 
     public ItemAdapter(List<ItemResponse> itemList) {
         this.itemList = itemList;
+        this.followedItemList = itemList;
     }
 
     public void updateItemList(List<ItemResponse> newList) {
         itemList = newList;
+        notifyDataSetChanged();
+    }
+
+    public void updateFollowedItemList(List<ItemResponse> newList) {
+        followedItemList = newList;
         notifyDataSetChanged();
     }
 
@@ -61,9 +68,16 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
         Picasso.get()
                 .load(url)
                 .resize(300, 300)
-                .placeholder(R.drawable.baseline_sports_basketball_24)
-                .error(R.drawable.baseline_star_24)
+                .placeholder(R.drawable.baseline_downloading_24)
+                .error(R.drawable.baseline_error_24)
                 .into(holder.productImageView);
+
+        //check if item is followed
+        if (followedItemList.contains(item)) {
+            holder.imageButton.setImageResource(R.drawable.baseline_star_24);
+        } else {
+            holder.imageButton.setImageResource(R.drawable.baseline_star_border_24);
+        }
     }
 
     @Override
