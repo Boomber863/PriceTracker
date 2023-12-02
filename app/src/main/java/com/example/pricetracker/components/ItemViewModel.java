@@ -39,10 +39,18 @@ public class ItemViewModel extends ViewModel {
     }
 
     public void addFollowedItem(ItemResponse selectedItem) {
-        followedItemsLiveData.getValue().add(selectedItem);
+        List<ItemResponse> currentList = followedItemsLiveData.getValue();
+        if (currentList != null) {
+            currentList.add(selectedItem);
+            followedItemsLiveData.setValue(currentList);
+        }
     }
 
     public void removeFollowedItem(ItemResponse selectedItem) {
-        followedItemsLiveData.getValue().remove(selectedItem);
+        List<ItemResponse> currentList = followedItemsLiveData.getValue();
+        if (currentList != null) {
+            currentList.remove(selectedItem);
+            followedItemsLiveData.setValue(currentList);
+        }
     }
 }
