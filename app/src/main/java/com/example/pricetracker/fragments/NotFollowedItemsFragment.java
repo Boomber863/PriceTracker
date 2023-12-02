@@ -1,5 +1,6 @@
 package com.example.pricetracker.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -12,6 +13,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.pricetracker.HomepageActivity;
+import com.example.pricetracker.ItemDetailsActivity;
 import com.example.pricetracker.R;
 import com.example.pricetracker.components.ItemViewModel;
 
@@ -22,7 +25,6 @@ public class NotFollowedItemsFragment extends Fragment {
     private ItemViewModel itemViewModel;
     private RecyclerView itemsRecyclerView;
     private ItemAdapter itemAdapter;
-    private ItemAdapter followedItemAdapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -51,6 +53,18 @@ public class NotFollowedItemsFragment extends Fragment {
         itemsRecyclerView = view.findViewById(R.id.recyclerViewList);
         itemsRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         itemAdapter = new ItemAdapter(new ArrayList<>());
+        // Set click listener for the adapter
+        itemAdapter.setOnItemClickListener(item -> {
+            // Create an Intent to start ItemDetailsActivity
+            Intent intent = new Intent(requireContext(), ItemDetailsActivity.class);
+
+            // Pass the item name as an extra
+            intent.putExtra("itemName", item.getName());
+            intent.putExtra("itemId", item.getId());
+
+            // Start the new activity
+            startActivity(intent);
+        });
         itemsRecyclerView.setAdapter(itemAdapter);
 
         return view;
