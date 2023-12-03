@@ -7,9 +7,11 @@
 
     <EditText
         android:id="@+id/editTextSearch"
+        android:layout_marginTop="10dp"
+        android:textSize="20sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Search by name"
+        android:hint="@string/searchByName"
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_editor_absoluteX="1dp" />
 

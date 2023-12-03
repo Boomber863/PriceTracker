@@ -107,16 +107,13 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
             holder.imageButton.setImageResource(R.drawable.baseline_star_border_24);
         }
 
-        holder.imageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (followedItemList.contains(item)) {
-                    unfollowItem(item);
-                    holder.imageButton.setImageResource(R.drawable.baseline_star_border_24);
-                } else {
-                    followItem(item);
-                    holder.imageButton.setImageResource(R.drawable.baseline_star_24);
-                }
+        holder.imageButton.setOnClickListener(v -> {
+            if (followedItemList.contains(item)) {
+                unfollowItem(item);
+                holder.imageButton.setImageResource(R.drawable.baseline_star_border_24);
+            } else {
+                followItem(item);
+                holder.imageButton.setImageResource(R.drawable.baseline_star_24);
             }
         });
     }
