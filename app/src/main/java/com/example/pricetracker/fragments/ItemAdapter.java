@@ -21,6 +21,7 @@ import com.example.pricetracker.dto.response.ItemPriceResponse;
 import com.example.pricetracker.dto.response.ItemResponse;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -182,4 +183,5 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
             }
         });
     }
+
 }

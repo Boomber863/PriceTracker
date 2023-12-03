@@ -16,7 +16,7 @@ public class FragmentAdapter extends FragmentStateAdapter {
     public Fragment createFragment(int position) {
         switch (position) {
             case 0:
-                return new NotFollowedItemsFragment();
+                return new AllItemsFragment();
             case 1:
                 return new FollowedItemsFragment();
             case 2:
