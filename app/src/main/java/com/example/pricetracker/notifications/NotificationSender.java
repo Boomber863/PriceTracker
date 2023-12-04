@@ -11,10 +11,13 @@ import android.util.Log;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
-import com.example.pricetracker.LoginActivity;
+import com.example.pricetracker.ItemDetailsActivity;
 import com.example.pricetracker.R;
+import com.example.pricetracker.api.headers.AuthorizationProvider;
+import com.example.pricetracker.dto.response.ItemResponse;
 
 import java.util.Date;
+import java.util.Random;
 
 public class NotificationSender {
 
@@ -48,11 +51,10 @@ public class NotificationSender {
 
     /**
      * @param context currently displayed activity
-     * @param title title of the notification
-     * @param text content of the notification
+     * @param item item whose price has been updated
      */
     @SuppressLint("MissingPermission")
-    public void sendNotification(Context context, String title, String text) {
+    public void sendPriceUpdateNotification(Context context, ItemResponse item) {
 
         if (channelId == null) {
             Log.e("DEBUG", "Notification channel does not exist - aborting");
@@ -60,17 +62,26 @@ public class NotificationSender {
         }
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelId);
-        builder.setContentTitle(title);
-        builder.setContentText(text);
+        builder.setContentTitle("Price updated!");
+        final double price = item.getNewestPrice() == null ? 0 : item.getNewestPrice().getPrice();
+        builder.setContentText("The price of " + item.getName() + " has been updated to " + price + " PLN");
         builder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
         builder.setSmallIcon(R.drawable.ic_followed);
         builder.setAutoCancel(true);
+
+        Intent itemDetailsIntent = new Intent(context, ItemDetailsActivity.class);
+        itemDetailsIntent.putExtra("itemName", item.getName());
+        itemDetailsIntent.putExtra("itemId", item.getId());
+        String authToken = AuthorizationProvider.getInstance().getAuthTokenFormatted();
+        authToken = authToken.replace("Bearer ", "");
+        itemDetailsIntent.putExtra("authToken", authToken);
+
         PendingIntent pendingIntent = PendingIntent
-                .getActivity(context, 0, new Intent(context, LoginActivity.class), PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+                .getActivity(context, 0, itemDetailsIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         builder.setContentIntent(pendingIntent);
 
         NotificationManagerCompat manager = NotificationManagerCompat.from(context);
-        final int notificationId = (int) ((new Date().getTime() / 1000L) % Integer.MAX_VALUE);
+        final int notificationId = (int) ((new Date().getTime() / 1000L) % Integer.MAX_VALUE) + new Random().nextInt(1000);
         manager.notify(notificationId, builder.build());
     }
 }

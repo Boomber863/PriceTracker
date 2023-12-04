@@ -3,9 +3,12 @@ package com.example.pricetracker.notifications;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.example.pricetracker.dto.response.ItemResponse;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.util.List;
 
@@ -14,21 +17,19 @@ public class PriceUpdateReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        final Object object = intent.getSerializableExtra("items");
-        if (!(object instanceof List)) {
+        SharedPreferences settings = context.getSharedPreferences("settings", Context.MODE_PRIVATE);
+        String itemsJson = settings.getString("items", "");
+        List<ItemResponse> items = new Gson().fromJson(itemsJson, new TypeToken<List<ItemResponse>>() {}.getType());
+
+        if (items == null) {
             Log.e("DEBUG", "Provided extra must be a list of items!");
             return;
         }
-        final List<ItemResponse> items = (List<ItemResponse>) object;
         if (items.isEmpty() || items.get(0) == null) {
             Log.e("DEBUG", "Not sending any notifications");
             return;
         }
 
-        items.forEach(item -> {
-            final double price = item.getNewestPrice() == null ? 0 : item.getNewestPrice().getPrice();
-            NotificationSender.getInstance()
-                    .sendNotification(context, "Price updated!", "The price of " + item.getName() + " has been updated to " + price + " zl");
-        });
+        items.forEach(item -> NotificationSender.getInstance().sendPriceUpdateNotification(context,  item));
     }
 }
