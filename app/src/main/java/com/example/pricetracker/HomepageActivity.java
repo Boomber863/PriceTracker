@@ -4,7 +4,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.app.AlarmManager;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -12,7 +17,10 @@ import com.example.pricetracker.api.provider.ItemServiceProvider;
 import com.example.pricetracker.components.ItemViewModel;
 import com.example.pricetracker.dto.response.ItemResponse;
 import com.example.pricetracker.fragments.FragmentAdapter;
+import com.example.pricetracker.notifications.NotificationSender;
+import com.example.pricetracker.notifications.PriceUpdateReceiver;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,12 +57,39 @@ public class HomepageActivity extends AppCompatActivity {
             }
         });
 
+        itemViewModel.getFollowedItemsLiveData()
+                .observe(this, this::updateSharedPreferencesItems);
+
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
             viewPager.setCurrentItem(getSelectedItemPosition(itemId), true);
             return true;
         });
         getAvailableItems();
+        prepareNotificationSystem();
+    }
+
+    private void updateSharedPreferencesItems(List<ItemResponse> followedItems) {
+        SharedPreferences sharedPref = getSharedPreferences("settings", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("items", new Gson().toJson(new ArrayList<>(followedItems)));
+        editor.apply();
+    }
+
+    private void prepareNotificationSystem() {
+
+        // THIS CREATES NOTIFICATION CHANNEL
+        NotificationSender.getInstance()
+                .createNotificationChannel(getSystemService(NotificationManager.class), "channelId");
+
+        Intent notificationIntent = new Intent(this, PriceUpdateReceiver.class);
+
+        // THIS IS RESPONSIBLE FOR BROADCASTING AND SENDING NOTIFICATIONS AN SPECIFIED TIME. RIGHT NOW IT'S EVERY MINUTE
+        PendingIntent pendingIntent = PendingIntent.getBroadcast
+                (this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),
+                1000 * 60, pendingIntent);
     }
 
     private int getSelectedItemPosition(int itemId) {

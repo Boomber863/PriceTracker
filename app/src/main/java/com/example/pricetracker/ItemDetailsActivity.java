@@ -1,8 +1,8 @@
 package com.example.pricetracker;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -19,9 +19,10 @@ import com.anychart.enums.Anchor;
 import com.anychart.enums.MarkerType;
 import com.anychart.enums.TooltipPositionMode;
 import com.anychart.scales.DateTime;
+import com.example.pricetracker.api.headers.AuthTokenException;
+import com.example.pricetracker.api.headers.AuthorizationProvider;
 import com.example.pricetracker.api.provider.ItemServiceProvider;
 import com.example.pricetracker.dto.response.ItemPriceResponse;
-import com.example.pricetracker.notifications.NotificationSender;
 
 import java.util.Comparator;
 import java.util.List;
@@ -41,6 +42,18 @@ public class ItemDetailsActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_details);
+
+        // WHEN WE CLICK ON NOTIFICATION WE HAVE TO AUTHENTICATE ONCE MORE.
+        // INTENT IN NOTIFICATION HAS TOKEN IN EXTRAS
+        final String authToken = getIntent().getStringExtra("authToken");
+        if (authToken != null) {
+            try {
+                AuthorizationProvider.getInstance().setAuthorizationData(authToken);
+            } catch (AuthTokenException e) {
+                Log.e("DEBUG", e.getMessage());
+                returnToLoginActivity();
+            }
+        }
 
         final String providedItemName = getIntent().getStringExtra("itemName");
         itemName = providedItemName != null ? providedItemName : "# NO ITEM NAME FOUND #";
@@ -62,6 +75,7 @@ public class ItemDetailsActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<List<ItemPriceResponse>> call, Throwable t) {
                 Log.e("ERROR", "Couldn't get item prices", t);
+                returnToLoginActivity();
             }
         });
     }
@@ -70,10 +84,6 @@ public class ItemDetailsActivity extends AppCompatActivity {
 
         AnyChartView anyChartView = findViewById(R.id.any_chart_view);
         anyChartView.setProgressBar(findViewById(R.id.progress_bar));
-
-        Button button = findViewById(R.id.notifyButton);
-        button.setOnClickListener(l -> NotificationSender.getInstance()
-                .sendNotification(this, "Price updated!", "The price of " + itemName + " has been updated."));
 
         Cartesian cartesian = AnyChart.line();
 
@@ -141,5 +151,9 @@ public class ItemDetailsActivity extends AppCompatActivity {
         cartesian.dataArea().background().fill("white 0.2");
         cartesian.legend().padding(0d, 0d, 10d, 0d);
         anyChartView.setChart(cartesian);
+    }
+
+    private void returnToLoginActivity() {
+        startActivity(new Intent(ItemDetailsActivity.this, LoginActivity.class));
     }
 }
