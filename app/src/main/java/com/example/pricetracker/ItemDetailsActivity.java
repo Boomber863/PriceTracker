@@ -82,6 +82,7 @@ public class ItemDetailsActivity extends AppCompatActivity {
         cartesian.crosshair().enabled(true);
         cartesian.crosshair().yLabel(true);
         cartesian.tooltip().positionMode(TooltipPositionMode.POINT);
+        cartesian.xScroller(true);
 
         cartesian.yGrid(0).enabled(true);
         cartesian.yGrid(0).stroke("Gray");
