@@ -1,8 +1,9 @@
 package com.example.pricetracker;
 
+import android.app.NotificationManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.TextView;
+import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -21,6 +22,7 @@ import com.anychart.enums.TooltipPositionMode;
 import com.anychart.scales.DateTime;
 import com.example.pricetracker.api.provider.ItemServiceProvider;
 import com.example.pricetracker.dto.response.ItemPriceResponse;
+import com.example.pricetracker.notifications.NotificationSender;
 
 import java.util.Comparator;
 import java.util.List;
@@ -45,8 +47,10 @@ public class ItemDetailsActivity extends AppCompatActivity {
         itemName = providedItemName != null ? providedItemName : "# NO ITEM NAME FOUND #";
         itemId = getIntent().getIntExtra("itemId", 0);
 
-        TextView itemNameTextView = findViewById(R.id.itemNameTextView);
-        itemNameTextView.setText(itemName);
+        //TODO: THIS CREATES NOTIFICATION CHANNEL, PROBABLY WILL HAVE TO MOVE IT SOMEWHERE ELSE
+        NotificationSender.getInstance()
+                .createNotificationChannel(getSystemService(NotificationManager.class), "channelId");
+
         getItemPricesForChart();
     }
 
@@ -72,6 +76,10 @@ public class ItemDetailsActivity extends AppCompatActivity {
 
         AnyChartView anyChartView = findViewById(R.id.any_chart_view);
         anyChartView.setProgressBar(findViewById(R.id.progress_bar));
+
+        Button button = findViewById(R.id.notifyButton);
+        button.setOnClickListener(l -> NotificationSender.getInstance()
+                .sendNotification(this, "Price updated!", "The price of " + itemName + " has been updated."));
 
         Cartesian cartesian = AnyChart.line();
 

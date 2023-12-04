@@ -8,21 +8,21 @@
     android:background="@color/dark_black"
     tools:context=".ItemDetailsActivity">
 
-    <TextView
-        android:id="@+id/itemNameTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Item Name"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
-
     <com.anychart.AnyChartView
         android:id="@+id/any_chart_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        />
+        >
+
+        <Button
+            android:id="@+id/notifyButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="290dp"
+            android:layout_marginTop="5dp"
+            android:text="Notify" />
+
+    </com.anychart.AnyChartView>
 
     <ProgressBar
         android:id="@+id/progress_bar"
