@@ -1,5 +1,9 @@
 package com.example.pricetracker.fragments;
 
+import android.app.AlarmManager;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -20,6 +24,8 @@ import com.example.pricetracker.ItemDetailsActivity;
 import com.example.pricetracker.R;
 import com.example.pricetracker.components.ItemViewModel;
 import com.example.pricetracker.dto.response.ItemResponse;
+import com.example.pricetracker.notifications.NotificationSender;
+import com.example.pricetracker.notifications.PriceUpdateReceiver;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,10 +46,27 @@ public class FollowedItemsFragment extends Fragment {
 
         // Observe changes in the list of not followed items
         itemViewModel.getFollowedItemsLiveData().observe(this, followedItems -> {
-            // Update the adapter with the new list of items
             itemAdapter.updateItemList(followedItems);
             itemAdapter.updateFollowedItemList(followedItems);
         });
+        prepareNotificationSystem();
+    }
+
+    private void prepareNotificationSystem() {
+        // THIS CREATES NOTIFICATION CHANNEL
+        NotificationSender.getInstance()
+                .createNotificationChannel(requireContext().getSystemService(NotificationManager.class), "channelId");
+
+        // TODO: FIGURE OUT HOW TO UPDATE DATA IN INTENT
+        Intent notificationIntent = new Intent(requireContext(), PriceUpdateReceiver.class);
+        notificationIntent.putExtra("items", new ArrayList<>(itemViewModel.getFollowedItemsLiveData().getValue()));
+
+        // THIS IS RESPONSIBLE FOR BROADCASTING AND SENDING NOTIFICATIONS AN SPECIFIED TIME. RIGHT NOW IT'S EVERY MINUTE
+        PendingIntent pendingIntent = PendingIntent.getBroadcast
+                (requireContext(), 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        AlarmManager alarmManager = (AlarmManager) requireContext().getSystemService(Context.ALARM_SERVICE);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),
+                1000 * 60, pendingIntent);
     }
 
     @Override

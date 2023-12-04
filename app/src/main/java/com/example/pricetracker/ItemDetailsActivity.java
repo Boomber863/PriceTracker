@@ -1,6 +1,5 @@
 package com.example.pricetracker;
 
-import android.app.NotificationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -46,11 +45,6 @@ public class ItemDetailsActivity extends AppCompatActivity {
         final String providedItemName = getIntent().getStringExtra("itemName");
         itemName = providedItemName != null ? providedItemName : "# NO ITEM NAME FOUND #";
         itemId = getIntent().getIntExtra("itemId", 0);
-
-        //TODO: THIS CREATES NOTIFICATION CHANNEL, PROBABLY WILL HAVE TO MOVE IT SOMEWHERE ELSE
-        NotificationSender.getInstance()
-                .createNotificationChannel(getSystemService(NotificationManager.class), "channelId");
-
         getItemPricesForChart();
     }
 

@@ -1,8 +1,9 @@
 package com.example.pricetracker.dto.response;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
-public class ItemPriceResponse {
+public class ItemPriceResponse implements Serializable {
 
     private int id;
     private int item_id;

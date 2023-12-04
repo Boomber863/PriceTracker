@@ -29,6 +29,11 @@
         <activity android:name=".SignupActivity" />
         <activity android:name=".HomepageActivity" />
         <activity android:name=".ItemDetailsActivity" />
+        <receiver
+            android:name=".notifications.PriceUpdateReceiver"
+            android:enabled="true"
+            android:exported="false" >
+        </receiver>
     </application>
 
 </manifest>
