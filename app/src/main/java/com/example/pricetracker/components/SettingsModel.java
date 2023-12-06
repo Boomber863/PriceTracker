@@ -29,6 +29,7 @@ public class SettingsModel {
 
     public String[] getOptions() {
         String[] values = {
+                "1 minute",
                 "10 minutes",
                 "30 minutes",
                 "1 hour",
@@ -40,6 +41,7 @@ public class SettingsModel {
 
     public String getOptionForMinutes(int minutes) {
         switch(minutes) {
+            case 1: return "1 minute";
             case 10: return "10 minutes";
             case 30: return "30 minutes";
             case 60: return "1 hour";
@@ -51,6 +53,7 @@ public class SettingsModel {
 
     public int getMinutesForOption(String option) {
         switch(option) {
+            case "1 minute": return 1;
             case "10 minutes": return 10;
             case "30 minutes": return 30;
             case "1 hour": return 60;
