@@ -40,7 +40,6 @@ public class FollowedItemsFragment extends Fragment {
 
         // Observe changes in the list of not followed items
         itemViewModel.getFollowedItemsLiveData().observe(this, followedItems -> {
-            // Update the adapter with the new list of items
             itemAdapter.updateItemList(followedItems);
             itemAdapter.updateFollowedItemList(followedItems);
         });
