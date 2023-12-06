@@ -15,6 +15,7 @@ import android.util.Log;
 
 import com.example.pricetracker.api.provider.ItemServiceProvider;
 import com.example.pricetracker.components.ItemViewModel;
+import com.example.pricetracker.components.SettingsModel;
 import com.example.pricetracker.dto.response.ItemResponse;
 import com.example.pricetracker.fragments.FragmentAdapter;
 import com.example.pricetracker.notifications.NotificationSender;
@@ -82,6 +83,20 @@ public class HomepageActivity extends AppCompatActivity {
         NotificationSender.getInstance()
                 .createNotificationChannel(getSystemService(NotificationManager.class), "channelId");
 
+        long notificationIntervalMinutes = 1;
+
+        // THIS IS WHERE WE GET DELAY FOR NOTIFICATIONS
+        SharedPreferences sharedPreferences = getSharedPreferences("settings", Context.MODE_PRIVATE);
+        String notificationSettingsJson = sharedPreferences.getString("settings", "");
+        SettingsModel notificationSettings = new Gson().fromJson(notificationSettingsJson, SettingsModel.class);
+
+        if (notificationSettings == null) {
+            Log.e("DEBUG", "Cannot find settings - leaving default notification interval of 1 minute");
+        } else {
+            notificationIntervalMinutes = notificationSettings.getNotificationIntervalInMinutes();
+            Log.e("DEBUG", "Setting notification interval for " + notificationIntervalMinutes + " minutes");
+        }
+
         Intent notificationIntent = new Intent(this, PriceUpdateReceiver.class);
 
         // THIS IS RESPONSIBLE FOR BROADCASTING AND SENDING NOTIFICATIONS AN SPECIFIED TIME. RIGHT NOW IT'S EVERY MINUTE
@@ -89,7 +104,7 @@ public class HomepageActivity extends AppCompatActivity {
                 (this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),
-                1000 * 60, pendingIntent);
+                1000 * 60 * notificationIntervalMinutes, pendingIntent);
     }
 
     private int getSelectedItemPosition(int itemId) {

@@ -76,12 +76,13 @@ public class NotificationSender {
         authToken = authToken.replace("Bearer ", "");
         itemDetailsIntent.putExtra("authToken", authToken);
 
+        final int notificationId = (int) ((new Date().getTime() / 1000L) % Integer.MAX_VALUE) + new Random().nextInt(1000);
+
         PendingIntent pendingIntent = PendingIntent
-                .getActivity(context, 0, itemDetailsIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+                .getActivity(context, notificationId, itemDetailsIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         builder.setContentIntent(pendingIntent);
 
         NotificationManagerCompat manager = NotificationManagerCompat.from(context);
-        final int notificationId = (int) ((new Date().getTime() / 1000L) % Integer.MAX_VALUE) + new Random().nextInt(1000);
         manager.notify(notificationId, builder.build());
     }
 }

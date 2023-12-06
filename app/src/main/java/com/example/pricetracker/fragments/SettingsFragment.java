@@ -3,31 +3,21 @@ package com.example.pricetracker.fragments;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-import android.widget.TimePicker;
 import android.widget.CheckBox;
 
-import com.example.pricetracker.HomepageActivity;
-import com.example.pricetracker.MainActivity;
 import com.example.pricetracker.R;
 import com.example.pricetracker.components.SettingsModel;
-import com.example.pricetracker.dto.response.ItemResponse;
 import com.google.gson.Gson;
-
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Set;
 
 public class SettingsFragment extends Fragment {
 
@@ -84,9 +74,7 @@ public class SettingsFragment extends Fragment {
     }
 
     private void loadSettings() {
-        FragmentActivity homepageActivity = getActivity();
-        SharedPreferences mPrefs = homepageActivity.getPreferences(Context.MODE_PRIVATE);
-
+        SharedPreferences mPrefs = getActivity().getSharedPreferences("settings", Context.MODE_PRIVATE);
         String json = mPrefs.getString("settings", null);
 
         if (json != null) {
@@ -98,8 +86,7 @@ public class SettingsFragment extends Fragment {
     }
 
     public void saveSettings(){
-        FragmentActivity homepageActivity = getActivity();
-        SharedPreferences mPrefs = homepageActivity.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences mPrefs = getActivity().getSharedPreferences("settings", Context.MODE_PRIVATE);
         SharedPreferences.Editor prefsEditor = mPrefs.edit();
 
         Gson gson = new Gson();
@@ -108,6 +95,4 @@ public class SettingsFragment extends Fragment {
         prefsEditor.putString("settings", json);
         prefsEditor.apply();
     }
-
-
 }
