@@ -36,7 +36,7 @@ public class HomepageActivity extends AppCompatActivity {
     private static final int ACTION_FOLLOWED = R.id.action_followed;
     private static final int ACTION_SETTINGS = R.id.action_settings;
 
-    private ItemViewModel itemViewModel;
+    private static ItemViewModel itemViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -193,4 +193,7 @@ public class HomepageActivity extends AppCompatActivity {
         }
     }
 
+    public static void updateItemModel(List<ItemResponse> items) {
+        itemViewModel.update(items);
+    }
 }

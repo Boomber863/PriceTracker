@@ -27,6 +27,10 @@ public class ItemResponse implements Serializable {
         return newest_price;
     }
 
+    public void setNewestPrice(ItemPriceResponse newestPrice) {
+        this.newest_price = newestPrice;
+    }
+
     @Override
     public String toString() {
         return this.name;
