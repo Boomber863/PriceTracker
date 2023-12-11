@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
@@ -19,7 +20,6 @@ import com.anychart.enums.Anchor;
 import com.anychart.enums.MarkerType;
 import com.anychart.enums.TooltipPositionMode;
 import com.anychart.scales.DateTime;
-import com.example.pricetracker.api.headers.AuthTokenException;
 import com.example.pricetracker.api.headers.AuthorizationProvider;
 import com.example.pricetracker.api.provider.ItemServiceProvider;
 import com.example.pricetracker.dto.response.ItemPriceResponse;
@@ -43,21 +43,19 @@ public class ItemDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_details);
 
-        // WHEN WE CLICK ON NOTIFICATION WE HAVE TO AUTHENTICATE ONCE MORE.
-        // INTENT IN NOTIFICATION HAS TOKEN IN EXTRAS
-        final String authToken = getIntent().getStringExtra("authToken");
-        if (authToken != null) {
-            try {
-                AuthorizationProvider.getInstance().setAuthorizationData(authToken);
-            } catch (AuthTokenException e) {
-                Log.e("DEBUG", e.getMessage());
-                returnToLoginActivity();
-            }
-        }
-
         final String providedItemName = getIntent().getStringExtra("itemName");
         itemName = providedItemName != null ? providedItemName : "# NO ITEM NAME FOUND #";
         itemId = getIntent().getIntExtra("itemId", 0);
+
+        if(!AuthorizationProvider.getInstance().isAuthorized()) {
+            getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    returnToMainActivity();
+                }
+            });
+        }
+
         getItemPricesForChart();
     }
 
@@ -68,6 +66,7 @@ public class ItemDetailsActivity extends AppCompatActivity {
             public void onResponse(Call<List<ItemPriceResponse>> call, Response<List<ItemPriceResponse>> response) {
                 if (!response.isSuccessful() || response.body() == null) {
                     Log.d("DEBUG", "Bad response for getting item prices!");
+                    returnToMainActivity();
                 }
                 createChart(response.body());
             }
@@ -75,7 +74,7 @@ public class ItemDetailsActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<List<ItemPriceResponse>> call, Throwable t) {
                 Log.e("ERROR", "Couldn't get item prices", t);
-                returnToLoginActivity();
+                returnToMainActivity();
             }
         });
     }
@@ -154,7 +153,8 @@ public class ItemDetailsActivity extends AppCompatActivity {
         anyChartView.setChart(cartesian);
     }
 
-    private void returnToLoginActivity() {
-        startActivity(new Intent(ItemDetailsActivity.this, LoginActivity.class));
+    private void returnToMainActivity() {
+        startActivity(new Intent(ItemDetailsActivity.this, MainActivity.class));
+        finish();
     }
 }

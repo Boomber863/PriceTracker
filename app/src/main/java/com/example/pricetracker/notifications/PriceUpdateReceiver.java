@@ -1,5 +1,6 @@
 package com.example.pricetracker.notifications;
 
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -45,6 +46,9 @@ public class PriceUpdateReceiver extends BroadcastReceiver {
             Log.e("DEBUG", "Not sending any notifications");
             return;
         }
+
+        NotificationSender.getInstance()
+                .createNotificationChannel(context.getSystemService(NotificationManager.class), "channelId");
 
         items.forEach(item -> NotificationSender.getInstance().sendPriceUpdateNotification(context, item));
     }

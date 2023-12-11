@@ -72,9 +72,6 @@ public class NotificationSender {
         Intent itemDetailsIntent = new Intent(context, ItemDetailsActivity.class);
         itemDetailsIntent.putExtra("itemName", item.getName());
         itemDetailsIntent.putExtra("itemId", item.getId());
-        String authToken = AuthorizationProvider.getInstance().getAuthTokenFormatted();
-        authToken = authToken.replace("Bearer ", "");
-        itemDetailsIntent.putExtra("authToken", authToken);
 
         final int notificationId = (int) ((new Date().getTime() / 1000L) % Integer.MAX_VALUE) + new Random().nextInt(1000);
 

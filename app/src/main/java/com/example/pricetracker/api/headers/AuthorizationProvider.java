@@ -18,6 +18,10 @@ public class AuthorizationProvider {
         return instance;
     }
 
+    public boolean isAuthorized() {
+        return authorization != null;
+    }
+
     public String getAuthTokenFormatted() {
         if(authorization == null) {
             return "Bearer: ";
