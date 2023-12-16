@@ -53,4 +53,21 @@ public class ItemViewModel extends ViewModel {
             followedItemsLiveData.setValue(currentList);
         }
     }
+
+    public void update(List<ItemResponse> newItems) {
+        List<ItemResponse> items = allItemsLiveData.getValue();
+        List<ItemResponse> followedItems = followedItemsLiveData.getValue();
+        newItems.forEach(item -> {
+            int indexAll = items.indexOf(item);
+            int indexFollowed = followedItems.indexOf(item);
+            if (indexAll != -1) {
+                items.set(indexAll, item);
+            }
+            if (indexFollowed != -1) {
+                followedItems.set(indexFollowed, item);
+            }
+        });
+        allItemsLiveData.setValue(items);
+        followedItemsLiveData.setValue(followedItems);
+    }
 }
